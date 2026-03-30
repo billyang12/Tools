@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:HierarchicalNotes.Maui.ViewModels"
+             xmlns:models="clr-namespace:HierarchicalNotes.Maui.Models"
+             x:Class="HierarchicalNotes.Maui.Views.SearchPage"
+             x:Name="RootPage"
+             Title="Search">
+    <ScrollView>
+        <VerticalStackLayout Padding="10" Spacing="10">
+            <Label Text="Tree Search" FontSize="20" FontAttributes="Bold" />
+            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+                <Entry Grid.Row="0" Grid.Column="0" Placeholder="Search pattern" Text="{Binding SearchPattern, Mode=TwoWay}" />
+                <Button Grid.Row="0" Grid.Column="1" Text="Search" Command="{Binding SearchTreeCommand}" />
+
+                <Picker Grid.Row="1" Grid.Column="0" Title="Search method" ItemsSource="{Binding SearchMethods}" SelectedItem="{Binding SearchMethod, Mode=TwoWay}" />
+                <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Spacing="10">
+                    <CheckBox IsChecked="{Binding SearchCaseSensitive, Mode=TwoWay}" />
+                    <Label Text="Case" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Spacing="10">
+                    <CheckBox IsChecked="{Binding SearchRegularExpression, Mode=TwoWay}" />
+                    <Label Text="Regex" VerticalOptions="Center" />
+                    <CheckBox IsChecked="{Binding SearchOnlyCurrentNode, Mode=TwoWay}" />
+                    <Label Text="Current subtree" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Grid.Row="3" Grid.Column="0" Spacing="10">
+                    <CheckBox IsChecked="{Binding SearchFromEnabled, Mode=TwoWay}" />
+                    <DatePicker Date="{Binding SearchFromDate, Mode=TwoWay}" />
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Grid.Row="4" Grid.Column="0" Spacing="10">
+                    <CheckBox IsChecked="{Binding SearchToEnabled, Mode=TwoWay}" />
+                    <DatePicker Date="{Binding SearchToDate, Mode=TwoWay}" />
+                </HorizontalStackLayout>
+            </Grid>
+
+            <Label Text="Results" FontSize="20" FontAttributes="Bold" />
+            <CollectionView x:Name="ResultsCollection" ItemsSource="{Binding SearchResults}" SelectionMode="Single" SelectionChanged="ResultsCollection_SelectionChanged">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:SearchResultItem">
+                        <Border StrokeShape="RoundRectangle 8" Stroke="#D0D0D0" Padding="8" Margin="0,0,0,8" BackgroundColor="White">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding Path}" FontAttributes="Bold" />
+                                <Label Text="{Binding Summary}" FontSize="12" TextColor="#555" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

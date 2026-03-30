@@ -1,0 +1,18 @@
+﻿<Window x:Class="HierachicalNotes.TreeNodeSearchResult"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HierachicalNotes"
+        mc:Ignorable="d"
+        Title="Search Results" Height="450" Width="800" Closed="Window_Closed" Topmost="True">
+    <Grid>
+        <ListBox Name="lbItems" SelectionChanged="lbItems_SelectionChanged" d:ItemsSource="{d:SampleData ItemCount=5}">
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Copy Text" Click="copyTextMenuItem_Click"></MenuItem>
+                </ContextMenu>
+            </ListBox.ContextMenu>
+        </ListBox>
+    </Grid>
+</Window>

@@ -1,0 +1,12 @@
+using Foundation;
+using UIKit;
+
+namespace HierarchicalNotes.Maui;
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        UIApplication.Main(args, null, typeof(AppDelegate));
+    }
+}
