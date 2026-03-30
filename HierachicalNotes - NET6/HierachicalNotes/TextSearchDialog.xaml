@@ -1,0 +1,87 @@
+﻿<Window x:Class="HierachicalNotes.TextSearchDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HierachicalNotes"
+        mc:Ignorable="d"
+        Title="Text Search" Height="250" Width="600"
+        Closed="Window_Closed"
+        Loaded="Window_Loaded"
+        Activated="Window_Activated"
+        Topmost="True">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Search Pattern TextBox -->
+        <TextBox x:Name="tbSearchPattern" 
+                 Grid.Row="0" 
+                 Grid.Column="0"
+                 Width="450" 
+                 Margin="0,0,10,0"
+                 VerticalAlignment="Center"
+                 HorizontalAlignment="Left"
+                 TextChanged="SearchTextChanged"
+                 ToolTip="Enter search pattern"/>
+
+        <!-- Search Button -->
+        <Button x:Name="SearchButton" 
+                Grid.Row="0" 
+                Grid.Column="1" 
+                Content="Search"
+                Width="75"
+                Margin="0,0,0,0"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Right"
+                ToolTip="Search for pattern" Click="SearchButton_Click"/>
+
+        <!-- Previous and Next Buttons -->
+        <StackPanel Orientation="Horizontal" 
+                    Grid.Row="1" 
+                    Grid.Column="0" 
+                    Grid.ColumnSpan="2" 
+                    Margin="0,10,0,0" 
+                    HorizontalAlignment="Right">
+            
+            <Button x:Name="FirstButton" 
+                    Content="First" 
+                    Width="75"
+                    Margin="0,0,10,0"
+                    ToolTip="Go to first occurrence" Click="FirstButton_Click"/>
+            
+            <Button x:Name="PreviousButton" 
+                    Content="Previous" 
+                    Width="75"
+                    Margin="0,0,10,0"
+                    ToolTip="Go to previous occurrence" Click="PreviousButton_Click"/>
+
+            <Button x:Name="NextButton" 
+                    Content="Next" 
+                    Width="75"
+                    ToolTip="Go to next occurrence" Click="NextButton_Click"/>
+
+            <Button x:Name="LastButton" 
+                    Content="Last" 
+                    Width="75"
+                    ToolTip="Go to last occurrence" Click="LastButton_Click"/>
+        </StackPanel>
+
+        <!-- Status Label -->
+        <Label x:Name="StatusLabel" 
+               Grid.Row="2" 
+               Grid.Column="0" 
+               Grid.ColumnSpan="2" 
+               Content="Enter a search pattern to find matches."
+               VerticalAlignment="Center"
+               HorizontalAlignment="Left"
+               Margin="0,10,0,0"/>
+    </Grid>
+</Window>

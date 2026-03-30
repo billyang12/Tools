@@ -1,0 +1,362 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Bill Yang\\Tools\\HierachicalNotes\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|c:\\bill yang\\tools\\hierachicalnotes\\hierachicalnotes\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|solutionrelative:hierachicalnotes\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|c:\\bill yang\\tools\\hierachicalnotes\\hierachicalnotes\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|solutionrelative:hierachicalnotes\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|c:\\bill yang\\tools\\hierachicalnotes\\hierachicalnotes\\uchnoteeditor.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|solutionrelative:hierachicalnotes\\uchnoteeditor.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|c:\\bill yang\\tools\\hierachicalnotes\\hierachicalnotes\\uchnoteeditor.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|solutionrelative:hierachicalnotes\\uchnoteeditor.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|c:\\bill yang\\tools\\hierachicalnotes\\hierachicalnotes\\textsearchdialog.xaml.cs||{8B382828-6202-11D1-8870-0000F87579D2}|",
+      "RelativeMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|solutionrelative:hierachicalnotes\\textsearchdialog.xaml.cs||{8B382828-6202-11D1-8870-0000F87579D2}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|c:\\bill yang\\tools\\hierachicalnotes\\hierachicalnotes\\treenodesearchresult.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|solutionrelative:hierachicalnotes\\treenodesearchresult.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|c:\\bill yang\\tools\\hierachicalnotes\\hierachicalnotes\\classes\\htmlexporter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|solutionrelative:hierachicalnotes\\classes\\htmlexporter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|c:\\bill yang\\tools\\hierachicalnotes\\hierachicalnotes\\classes\\hnote.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|solutionrelative:hierachicalnotes\\classes\\hnote.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|c:\\bill yang\\tools\\hierachicalnotes\\hierachicalnotes\\textsearchdialog.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|solutionrelative:hierachicalnotes\\textsearchdialog.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|c:\\bill yang\\tools\\hierachicalnotes\\hierachicalnotes\\treenodesearchresult.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|solutionrelative:hierachicalnotes\\treenodesearchresult.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|c:\\bill yang\\tools\\hierachicalnotes\\hierachicalnotes\\passworddialog.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|solutionrelative:hierachicalnotes\\passworddialog.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|c:\\bill yang\\tools\\hierachicalnotes\\hierachicalnotes\\ucsearchcriteriaeditor.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|solutionrelative:hierachicalnotes\\ucsearchcriteriaeditor.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|c:\\bill yang\\tools\\hierachicalnotes\\hierachicalnotes\\ucsearchcriteriaeditor.xaml.cs||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|solutionrelative:hierachicalnotes\\ucsearchcriteriaeditor.xaml.cs||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|c:\\bill yang\\tools\\hierachicalnotes\\hierachicalnotes\\classes\\searchcriteria.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|solutionrelative:hierachicalnotes\\classes\\searchcriteria.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|c:\\bill yang\\tools\\hierachicalnotes\\hierachicalnotes\\interfaces\\isearchcriteria.cs||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{DC854EF5-9B55-41D5-9608-E81D36B2FF42}|HierachicalNotes\\HierachicalNotes.csproj|solutionrelative:hierachicalnotes\\interfaces\\isearchcriteria.cs||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 3520,
+          "SelectedChildIndex": 9,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e5c86464-96be-4d7c-9a8b-abcb3bbf5f92}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:135:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:136:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:133:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{6324226f-61b6-4f28-92ee-18d4b5fe1e48}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{5726b0e3-1012-5233-81f9-d1fad48e7a56}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e1b7d1f8-9b3c-49b1-8f4f-bfc63a88835d}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "HierachicalNotes\\MainWindow.xaml",
+              "ToolTip": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\MainWindow.xaml",
+              "RelativeToolTip": "HierachicalNotes\\MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-07-02T01:24:47.313Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "HierachicalNotes\\MainWindow.xaml.cs",
+              "ToolTip": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\MainWindow.xaml.cs",
+              "RelativeToolTip": "HierachicalNotes\\MainWindow.xaml.cs",
+              "ViewState": "AgIAACwAAAAAAAAAAAAjwD4AAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-02T01:49:21.573Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ucHNoteEditor.xaml",
+              "DocumentMoniker": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\ucHNoteEditor.xaml",
+              "RelativeDocumentMoniker": "HierachicalNotes\\ucHNoteEditor.xaml",
+              "ToolTip": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\ucHNoteEditor.xaml",
+              "RelativeToolTip": "HierachicalNotes\\ucHNoteEditor.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-07-02T01:25:22.508Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "TreeNodeSearchResult.xaml.cs",
+              "DocumentMoniker": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\TreeNodeSearchResult.xaml.cs",
+              "RelativeDocumentMoniker": "HierachicalNotes\\TreeNodeSearchResult.xaml.cs",
+              "ToolTip": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\TreeNodeSearchResult.xaml.cs",
+              "RelativeToolTip": "HierachicalNotes\\TreeNodeSearchResult.xaml.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAAB4AAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-11T23:00:24.327Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "TextSearchDialog.xaml.cs",
+              "DocumentMoniker": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\TextSearchDialog.xaml.cs",
+              "RelativeDocumentMoniker": "HierachicalNotes\\TextSearchDialog.xaml.cs",
+              "ToolTip": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\TextSearchDialog.xaml.cs",
+              "RelativeToolTip": "HierachicalNotes\\TextSearchDialog.xaml.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAB4AAABLAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-11T23:13:32.165Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "HTMLExporter.cs",
+              "DocumentMoniker": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\Classes\\HTMLExporter.cs",
+              "RelativeDocumentMoniker": "HierachicalNotes\\Classes\\HTMLExporter.cs",
+              "ToolTip": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\Classes\\HTMLExporter.cs",
+              "RelativeToolTip": "HierachicalNotes\\Classes\\HTMLExporter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-18T23:07:18.383Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "TreeNodeSearchResult.xaml",
+              "DocumentMoniker": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\TreeNodeSearchResult.xaml",
+              "RelativeDocumentMoniker": "HierachicalNotes\\TreeNodeSearchResult.xaml",
+              "ToolTip": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\TreeNodeSearchResult.xaml",
+              "RelativeToolTip": "HierachicalNotes\\TreeNodeSearchResult.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-08-11T22:58:36.931Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "PasswordDialog.xaml",
+              "DocumentMoniker": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\PasswordDialog.xaml",
+              "RelativeDocumentMoniker": "HierachicalNotes\\PasswordDialog.xaml",
+              "ToolTip": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\PasswordDialog.xaml",
+              "RelativeToolTip": "HierachicalNotes\\PasswordDialog.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-08-11T23:00:11.634Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "HNote.cs",
+              "DocumentMoniker": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\Classes\\HNote.cs",
+              "RelativeDocumentMoniker": "HierachicalNotes\\Classes\\HNote.cs",
+              "ToolTip": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\Classes\\HNote.cs",
+              "RelativeToolTip": "HierachicalNotes\\Classes\\HNote.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABAAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-02T01:51:58.705Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "ucSearchCriteriaEditor.xaml.cs",
+              "DocumentMoniker": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\ucSearchCriteriaEditor.xaml.cs",
+              "RelativeDocumentMoniker": "HierachicalNotes\\ucSearchCriteriaEditor.xaml.cs",
+              "ToolTip": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\ucSearchCriteriaEditor.xaml.cs",
+              "RelativeToolTip": "HierachicalNotes\\ucSearchCriteriaEditor.xaml.cs",
+              "ViewState": "AQIAAAkAAAAAAAAAAAAAAE8AAAAdAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-02T03:02:54.776Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "ucSearchCriteriaEditor.xaml",
+              "DocumentMoniker": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\ucSearchCriteriaEditor.xaml",
+              "RelativeDocumentMoniker": "HierachicalNotes\\ucSearchCriteriaEditor.xaml",
+              "ToolTip": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\ucSearchCriteriaEditor.xaml",
+              "RelativeToolTip": "HierachicalNotes\\ucSearchCriteriaEditor.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-07-02T02:08:19.614Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "SearchCriteria.cs",
+              "DocumentMoniker": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\Classes\\SearchCriteria.cs",
+              "RelativeDocumentMoniker": "HierachicalNotes\\Classes\\SearchCriteria.cs",
+              "ToolTip": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\Classes\\SearchCriteria.cs",
+              "RelativeToolTip": "HierachicalNotes\\Classes\\SearchCriteria.cs",
+              "ViewState": "AQIAAH0AAAAAAAAAAAAtwIcAAAAXAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-02T02:08:13.537Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "ISearchCriteria.cs",
+              "DocumentMoniker": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\Interfaces\\ISearchCriteria.cs",
+              "RelativeDocumentMoniker": "HierachicalNotes\\Interfaces\\ISearchCriteria.cs",
+              "ToolTip": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\Interfaces\\ISearchCriteria.cs",
+              "RelativeToolTip": "HierachicalNotes\\Interfaces\\ISearchCriteria.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABoAAAAZAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-02T03:42:03.919Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Microsoft.Common.CurrentVersion.targets",
+              "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "RelativeDocumentMoniker": "..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "ToolTip": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "RelativeToolTip": "..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "ViewState": "AQIAAIEUAAAAAAAAAAAiwJUUAAAEAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
+              "WhenOpened": "2024-07-02T01:33:28.602Z"
+            }
+          ]
+        },
+        {
+          "DockedWidth": 1157,
+          "SelectedChildIndex": 9,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{0ad07096-bba9-4900-a651-0598d26f6d24}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:2:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:134:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ucHNoteEditor.xaml.cs",
+              "DocumentMoniker": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\ucHNoteEditor.xaml.cs",
+              "RelativeDocumentMoniker": "HierachicalNotes\\ucHNoteEditor.xaml.cs",
+              "ToolTip": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\ucHNoteEditor.xaml.cs",
+              "RelativeToolTip": "HierachicalNotes\\ucHNoteEditor.xaml.cs",
+              "ViewState": "AgIAADkBAAAAAAAAAAAIwEIBAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-02T01:42:00.869Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "TextSearchDialog.xaml",
+              "DocumentMoniker": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\TextSearchDialog.xaml",
+              "RelativeDocumentMoniker": "HierachicalNotes\\TextSearchDialog.xaml",
+              "ToolTip": "C:\\Bill Yang\\Tools\\HierachicalNotes\\HierachicalNotes\\TextSearchDialog.xaml",
+              "RelativeToolTip": "HierachicalNotes\\TextSearchDialog.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-08-11T23:02:42.525Z"
+            }
+          ]
+        },
+        {
+          "DockedWidth": 381,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:138:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:137:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
