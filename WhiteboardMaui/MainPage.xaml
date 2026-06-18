@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WhiteboardMaui.MainPage"
+             Title="Whiteboard">
+    <Grid RowDefinitions="Auto,*">
+        <ScrollView Orientation="Horizontal" Grid.Row="0" HeightRequest="60">
+            <StackLayout Orientation="Horizontal" Padding="8" Spacing="8">
+                <Button Text="New" Clicked="NewClicked" />
+                <Button Text="Open" Clicked="OpenClicked" />
+                <Button Text="Save" Clicked="SaveClicked" />
+                <Button Text="Save As" Clicked="SaveAsClicked" />
+                <Button Text="Load Image" Clicked="LoadImageClicked" />
+                <Button Text="Clear" Clicked="ClearClicked" />
+
+                <Picker x:Name="ToolPicker" Title="Tool" WidthRequest="120">
+                    <Picker.Items>
+                        <x:String>Free Draw</x:String>
+                        <x:String>Line</x:String>
+                        <x:String>Rectangle</x:String>
+                        <x:String>Ellipse</x:String>
+                        <x:String>Text</x:String>
+                        <x:String>Erase</x:String>
+                    </Picker.Items>
+                </Picker>
+
+                <Picker x:Name="ColorPicker" Title="Color" WidthRequest="120" SelectedIndexChanged="ColorPicker_SelectedIndexChanged">
+                    <Picker.Items>
+                        <x:String>Black</x:String>
+                        <x:String>Red</x:String>
+                        <x:String>Blue</x:String>
+                        <x:String>Green</x:String>
+                        <x:String>Custom...</x:String>
+                    </Picker.Items>
+                </Picker>
+
+                <Picker x:Name="BgPicker" Title="Background" WidthRequest="140" SelectedIndexChanged="BgPicker_SelectedIndexChanged">
+                    <Picker.Items>
+                        <x:String>White</x:String>
+                        <x:String>Transparent</x:String>
+                        <x:String>Custom...</x:String>
+                    </Picker.Items>
+                </Picker>
+
+                <Label Text="Line" VerticalOptions="Center" />
+                <Slider x:Name="LineWidthSlider" Minimum="1" Maximum="50" Value="4" WidthRequest="120" />
+            </StackLayout>
+        </ScrollView>
+
+        <Grid Grid.Row="1">
+            <GraphicsView x:Name="Canvas" Drawable="{Binding CanvasDrawable}" BackgroundColor="Transparent" />
+        </Grid>
+    </Grid>
+</ContentPage>

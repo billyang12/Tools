@@ -1,0 +1,18 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/HierachicalNotes - NET10/.vs
+/HierachicalNotes - NET10/HierachicalNotes/obj/Debug/net10.0-windows
+/HierachicalNotes - NET10/HierachicalNotes/obj/Release/net10.0-windows
+/HierarchicalNotes_MAUI/.vs
+/HierarchicalNotes_MAUI/src/HierarchicalNotes.Core/obj
+/HierachicalNotes - NET6/HierachicalNotes/obj
+/PdfEditorApp/bin/Debug
+/PdfEditorApp/obj
+/PdfEditorApp/.vs
+/WhiteboardMaui/.vs
+/WhiteboardMaui/bin/Debug
+/WhiteboardMaui/obj
+/WhiteBoardMauiApp/.vs

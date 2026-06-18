@@ -1,0 +1,268 @@
+<Window x:Class="PdfEditorApp.ContentEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="PDF Content Editor" Height="800" Width="1400"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#1976D2"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#CCCCCC"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <ToolBar Grid.Row="0" Background="#37474F" Padding="10,5">
+            <Button Click="OpenPdf_Click" ToolTip="Open PDF">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="📂 " FontSize="16"/>
+                    <TextBlock Text="Open PDF" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Separator/>
+
+            <TextBlock Text="Page:" VerticalAlignment="Center" Foreground="White" Margin="5,0"/>
+            <TextBox x:Name="PageNumberTextBox" Width="50" Text="1" TextAlignment="Center" VerticalContentAlignment="Center"/>
+            <Button Click="GoToPage_Click" Content="Go" MinWidth="40"/>
+            <TextBlock x:Name="TotalPagesLabel" Text="/ 0" VerticalAlignment="Center" Foreground="White" Margin="5,0"/>
+
+            <Separator/>
+
+            <Button Click="PreviousPage_Click" Content="◀" MinWidth="40" ToolTip="Previous Page"/>
+            <Button Click="NextPage_Click" Content="▶" MinWidth="40" ToolTip="Next Page"/>
+
+            <Separator/>
+
+            <TextBlock Text="Edit Mode:" VerticalAlignment="Center" Foreground="White" Margin="10,0,5,0"/>
+            <RadioButton x:Name="SelectModeRadio" Content="Select" IsChecked="True" Foreground="White" VerticalAlignment="Center" Margin="5,0" GroupName="EditMode"/>
+            <RadioButton x:Name="AddTextModeRadio" Content="Add Text" Foreground="White" VerticalAlignment="Center" Margin="5,0" GroupName="EditMode"/>
+            <RadioButton x:Name="AddImageModeRadio" Content="Add Image" Foreground="White" VerticalAlignment="Center" Margin="5,0" GroupName="EditMode"/>
+            <RadioButton x:Name="HighlightModeRadio" Content="Highlight" Foreground="White" VerticalAlignment="Center" Margin="5,0" GroupName="EditMode"/>
+            <RadioButton x:Name="EraseModeRadio" Content="Erase" Foreground="White" VerticalAlignment="Center" Margin="5,0" GroupName="EditMode"/>
+
+            <Separator/>
+
+            <Button Click="SavePdf_Click" ToolTip="Save PDF">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="💾 " FontSize="16"/>
+                    <TextBlock Text="Save" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </ToolBar>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Panel - Tools -->
+            <Border Grid.Column="0" Background="#ECEFF1" CornerRadius="8" Padding="10" Margin="0,0,10,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Editing Tools" FontSize="18" FontWeight="Bold" Margin="0,0,0,15" Foreground="#263238"/>
+
+                        <!-- Text Operations -->
+                        <GroupBox Header="Text Operations" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="Find Text:" Margin="0,5,0,2"/>
+                                <TextBox x:Name="FindTextBox" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Replace With:" Margin="0,5,0,2"/>
+                                <TextBox x:Name="ReplaceTextBox" Margin="0,0,0,5"/>
+
+                                <Button Click="ReplaceText_Click" Content="Replace Text" Margin="0,5"/>
+                                <Button Click="AddText_Click" Content="Add Text at Cursor" Margin="0,5"/>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Image Operations -->
+                        <GroupBox Header="Image Operations" Margin="0,0,0,10">
+                            <StackPanel>
+                                <Button Click="SelectImage_Click" Content="Select Image File" Margin="0,5"/>
+                                <TextBlock x:Name="SelectedImageLabel" Text="No image selected"
+                                         Margin="0,5" TextWrapping="Wrap" Foreground="#666"/>
+                                <Button Click="AddImageAtCursor_Click" Content="Add Image at Cursor"
+                                       Margin="0,5" IsEnabled="False" x:Name="AddImageButton"/>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Drawing Tools -->
+                        <GroupBox Header="Drawing Tools" Margin="0,0,0,10">
+                            <StackPanel>
+                                <Button Click="HighlightArea_Click" Content="Highlight Selection" Margin="0,5"/>
+                                <Button Click="DrawRectangle_Click" Content="Draw Rectangle" Margin="0,5"/>
+                                <Button Click="EraseArea_Click" Content="Erase Selection" Margin="0,5"/>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Text Properties -->
+                        <GroupBox Header="Text Properties" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="Font Size:" Margin="0,5,0,2"/>
+                                <Slider x:Name="FontSizeSlider" Minimum="8" Maximum="72" Value="12"
+                                       TickFrequency="4" IsSnapToTickEnabled="True"/>
+                                <TextBlock Text="{Binding ElementName=FontSizeSlider, Path=Value, StringFormat={}{0:F0}pt}"
+                                         HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Position Info -->
+                        <GroupBox Header="Cursor Position" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock x:Name="PositionLabel" Text="X: 0, Y: 0" Margin="0,5"/>
+                                <TextBlock x:Name="SelectionLabel" Text="No selection"
+                                         Margin="0,5" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Center - PDF Canvas -->
+            <Border Grid.Column="1" Background="White" CornerRadius="8" BorderBrush="#CCCCCC" BorderThickness="1">
+                <Grid>
+                    <ScrollViewer x:Name="PdfScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                        <Canvas x:Name="PdfCanvas"
+                               Background="White"
+                               Width="595"
+                               Height="842"
+                               MouseLeftButtonDown="Canvas_MouseLeftButtonDown"
+                               MouseMove="Canvas_MouseMove"
+                               MouseLeftButtonUp="Canvas_MouseLeftButtonUp">
+                            <!-- PDF content will be rendered here -->
+                            <TextBlock x:Name="PlaceholderText"
+                                     Text="Open a PDF file to start editing"
+                                     Canvas.Left="150"
+                                     Canvas.Top="400"
+                                     FontSize="18"
+                                     Foreground="#CCCCCC"/>
+
+                            <!-- Selection rectangle -->
+                            <Rectangle x:Name="SelectionRectangle"
+                                     Stroke="Blue"
+                                     StrokeThickness="2"
+                                     StrokeDashArray="5,3"
+                                     Fill="Transparent"
+                                     Visibility="Collapsed"/>
+                        </Canvas>
+                    </ScrollViewer>
+
+                    <!-- Zoom Controls -->
+                    <StackPanel Orientation="Horizontal"
+                               VerticalAlignment="Bottom"
+                               HorizontalAlignment="Right"
+                               Margin="10"
+                               Background="#F0F0F0"
+                               Opacity="0.9">
+                        <Button Content="-" Click="ZoomOut_Click" MinWidth="30" Margin="5"/>
+                        <TextBlock x:Name="ZoomLabel" Text="100%" VerticalAlignment="Center" Margin="5"/>
+                        <Button Content="+" Click="ZoomIn_Click" MinWidth="30" Margin="5"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Right Panel - Elements List -->
+            <Border Grid.Column="2" Background="#ECEFF1" CornerRadius="8" Padding="10" Margin="10,0,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="Page Elements" FontSize="18" FontWeight="Bold" Margin="0,0,0,15" Foreground="#263238"/>
+
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <GroupBox Header="Text Elements">
+                                <ListBox x:Name="TextElementsList"
+                                       Height="200"
+                                       SelectionChanged="TextElementsList_SelectionChanged">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Text}" FontWeight="Bold" TextTrimming="CharacterEllipsis" MaxWidth="250"/>
+                                                <TextBlock>
+                                                    <Run Text="Position: "/>
+                                                    <Run Text="{Binding X, StringFormat=X:{0:F0}}"/>
+                                                    <Run Text=", "/>
+                                                    <Run Text="{Binding Y, StringFormat=Y:{0:F0}}"/>
+                                                </TextBlock>
+                                                <TextBlock>
+                                                    <Run Text="Font Size: "/>
+                                                    <Run Text="{Binding FontSize, StringFormat={}{0:F0}pt}"/>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </GroupBox>
+
+                            <GroupBox Header="Images" Margin="0,10,0,0">
+                                <ListBox x:Name="ImageElementsList" Height="150">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding ImageId}" FontWeight="Bold"/>
+                                                <TextBlock>
+                                                    <Run Text="Size: "/>
+                                                    <Run Text="{Binding Width, StringFormat={}{0:F0}}"/>
+                                                    <Run Text=" x "/>
+                                                    <Run Text="{Binding Height, StringFormat={}{0:F0}}"/>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </GroupBox>
+
+                            <Button Content="Refresh Elements" Click="RefreshElements_Click" Margin="0,10"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="2" Background="#263238" Padding="10,5">
+            <TextBlock x:Name="StatusLabel"
+                     Text="Ready - Open a PDF file to start editing"
+                     Foreground="White"
+                     VerticalAlignment="Center"/>
+        </Border>
+    </Grid>
+</Window>

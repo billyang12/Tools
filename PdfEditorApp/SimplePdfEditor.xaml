@@ -1,0 +1,372 @@
+<Window x:Class="PdfEditorApp.SimplePdfEditor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="PDF Content Editor - Direct Editing" Height="800" Width="1400"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <Border Grid.Row="0" Background="#263238" Padding="10">
+            <StackPanel Orientation="Horizontal">
+                <Button Click="OpenPdf_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="📂 " FontSize="16"/>
+                        <TextBlock Text="Open PDF" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Click="SavePdf_Click" x:Name="SaveButton" IsEnabled="False">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="💾 " FontSize="16"/>
+                        <TextBlock Text="Apply Changes" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Separator Margin="10,0"/>
+                <TextBlock Text="Current PDF:" VerticalAlignment="Center" Foreground="White" Margin="10,0,5,0"/>
+                <TextBlock x:Name="FileNameText" Text="No file open" VerticalAlignment="Center" Foreground="White" FontWeight="Bold"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="350"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Panel - Operations -->
+            <Border Grid.Column="0" Background="#F5F5F5" BorderBrush="#DDD" BorderThickness="0,0,1,0" Padding="10">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="PDF Content Editor" FontSize="18" FontWeight="Bold" Margin="0,0,0,15"/>
+
+                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,15" Foreground="#666">
+                            This editor works without visual rendering, making it 100% reliable.
+                            Specify positions using coordinates.
+                        </TextBlock>
+
+                        <!-- Add Text -->
+                        <GroupBox Header="Add Text to PDF" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="Text Content:" Margin="0,5,0,2"/>
+                                <TextBox x:Name="AddTextBox" TextWrapping="Wrap" Height="60" AcceptsReturn="True"/>
+
+                                <TextBlock Text="Page Number:" Margin="0,10,0,2"/>
+                                <TextBox x:Name="AddTextPageBox" Text="1"/>
+
+                                <TextBlock Text="X Position (left to right):" Margin="0,10,0,2"/>
+                                <Slider x:Name="AddTextXSlider" Minimum="0" Maximum="595" Value="50" TickFrequency="50"/>
+                                <TextBlock Text="{Binding ElementName=AddTextXSlider, Path=Value, StringFormat={}{0:F0}}" HorizontalAlignment="Center"/>
+
+                                <TextBlock Text="Y Position (bottom to top):" Margin="0,10,0,2"/>
+                                <Slider x:Name="AddTextYSlider" Minimum="0" Maximum="842" Value="750" TickFrequency="50"/>
+                                <TextBlock Text="{Binding ElementName=AddTextYSlider, Path=Value, StringFormat={}{0:F0}}" HorizontalAlignment="Center"/>
+
+                                <TextBlock Text="Font Size:" Margin="0,10,0,2"/>
+                                <Slider x:Name="AddTextSizeSlider" Minimum="8" Maximum="72" Value="12" TickFrequency="4"/>
+                                <TextBlock Text="{Binding ElementName=AddTextSizeSlider, Path=Value, StringFormat={}{0:F0}pt}" HorizontalAlignment="Center"/>
+
+                                <TextBlock Text="Font:" Margin="0,10,0,2"/>
+                                <ComboBox x:Name="AddTextFontCombo" SelectedIndex="0">
+                                    <ComboBoxItem Content="Helvetica (Standard)"/>
+                                    <ComboBoxItem Content="Helvetica-Bold"/>
+                                    <ComboBoxItem Content="Times-Roman"/>
+                                    <ComboBoxItem Content="Times-Bold"/>
+                                    <ComboBoxItem Content="Courier"/>
+                                </ComboBox>
+
+                                <TextBlock Text="Color:" Margin="0,10,0,2"/>
+                                <ComboBox x:Name="AddTextColorCombo" SelectedIndex="0">
+                                    <ComboBoxItem Content="Black"/>
+                                    <ComboBoxItem Content="Red"/>
+                                    <ComboBoxItem Content="Blue"/>
+                                    <ComboBoxItem Content="Green"/>
+                                    <ComboBoxItem Content="Purple"/>
+                                    <ComboBoxItem Content="White"/>
+                                </ComboBox>
+
+                                <Button Click="AddText_Click" Content="✏️ Add Text to PDF" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Add Image -->
+                        <GroupBox Header="Add Image to PDF" Margin="0,0,0,10">
+                            <StackPanel>
+                                <Button Click="SelectImage_Click" Content="📷 Select Image File" Margin="0,5"/>
+                                <TextBlock x:Name="SelectedImageLabel" Text="No image selected"
+                                         TextWrapping="Wrap" Margin="0,5" FontSize="11" Foreground="Gray"/>
+
+                                <TextBlock Text="Page Number:" Margin="0,10,0,2"/>
+                                <TextBox x:Name="AddImagePageBox" Text="1"/>
+
+                                <TextBlock Text="X Position:" Margin="0,10,0,2"/>
+                                <Slider x:Name="AddImageXSlider" Minimum="0" Maximum="595" Value="50"/>
+                                <TextBlock Text="{Binding ElementName=AddImageXSlider, Path=Value, StringFormat={}{0:F0}}" HorizontalAlignment="Center"/>
+
+                                <TextBlock Text="Y Position:" Margin="0,10,0,2"/>
+                                <Slider x:Name="AddImageYSlider" Minimum="0" Maximum="842" Value="700"/>
+                                <TextBlock Text="{Binding ElementName=AddImageYSlider, Path=Value, StringFormat={}{0:F0}}" HorizontalAlignment="Center"/>
+
+                                <TextBlock Text="Width:" Margin="0,10,0,2"/>
+                                <Slider x:Name="AddImageWidthSlider" Minimum="50" Maximum="500" Value="200"/>
+                                <TextBlock Text="{Binding ElementName=AddImageWidthSlider, Path=Value, StringFormat={}{0:F0}}" HorizontalAlignment="Center"/>
+
+                                <TextBlock Text="Height:" Margin="0,10,0,2"/>
+                                <Slider x:Name="AddImageHeightSlider" Minimum="50" Maximum="500" Value="200"/>
+                                <TextBlock Text="{Binding ElementName=AddImageHeightSlider, Path=Value, StringFormat={}{0:F0}}" HorizontalAlignment="Center"/>
+
+                                <Button Click="AddImage_Click" Content="🖼️ Add Image to PDF" Margin="0,10,0,0" x:Name="AddImageButton" IsEnabled="False"/>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Find Text -->
+                        <GroupBox Header="Find Text on Page" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="Search for text to see its properties:" Margin="0,5,0,2" TextWrapping="Wrap" FontSize="11" Foreground="Gray"/>
+
+                                <TextBlock Text="Text to Find:" Margin="0,5,0,2"/>
+                                <TextBox x:Name="FindSearchBox"/>
+
+                                <TextBlock Text="Page Number:" Margin="0,10,0,2"/>
+                                <TextBox x:Name="FindPageBox" Text="1"/>
+
+                                <Button Click="FindText_Click" Content="🔍 Find Text" Margin="0,10,0,10"/>
+
+                                <TextBlock Text="Results (copyable):" Margin="0,5,0,2" FontWeight="Bold"/>
+                                <TextBox x:Name="FindResultsText"
+                                         Height="150"
+                                         TextWrapping="Wrap"
+                                         FontFamily="Consolas"
+                                         FontSize="10"
+                                         Background="#f0f0f0"
+                                         VerticalScrollBarVisibility="Auto"
+                                         IsReadOnly="True"
+                                         Text="Search results will appear here..."/>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Replace Text -->
+                        <GroupBox Header="Replace Text" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="Find Text:" Margin="0,5,0,2"/>
+                                <TextBox x:Name="FindTextBox"/>
+
+                                <TextBlock Text="Replace With:" Margin="0,10,0,2"/>
+                                <TextBox x:Name="ReplaceTextBox"/>
+
+                                <TextBlock Text="Page Number:" Margin="0,10,0,2"/>
+                                <TextBox x:Name="ReplacePageBox" Text="1"/>
+
+                                <Button Click="ReplaceText_Click" Content="🔄 Replace Text" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Delete Text -->
+                        <GroupBox Header="Delete Text" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="Text to Delete:" Margin="0,5,0,2"/>
+                                <TextBox x:Name="DeleteTextBox"/>
+
+                                <TextBlock Text="Page Number:" Margin="0,10,0,2"/>
+                                <TextBox x:Name="DeletePageBox" Text="1"/>
+
+                                <TextBlock Text="Cover with rectangle (approx. position):" Margin="0,10,0,2" TextWrapping="Wrap" FontSize="11" Foreground="Gray"/>
+
+                                <TextBlock Text="X Position:" Margin="0,10,0,2"/>
+                                <Slider x:Name="DeleteXSlider" Minimum="0" Maximum="595" Value="50"/>
+                                <TextBlock Text="{Binding ElementName=DeleteXSlider, Path=Value, StringFormat={}{0:F0}}" HorizontalAlignment="Center"/>
+
+                                <TextBlock Text="Y Position:" Margin="0,10,0,2"/>
+                                <Slider x:Name="DeleteYSlider" Minimum="0" Maximum="842" Value="700"/>
+                                <TextBlock Text="{Binding ElementName=DeleteYSlider, Path=Value, StringFormat={}{0:F0}}" HorizontalAlignment="Center"/>
+
+                                <TextBlock Text="Width:" Margin="0,10,0,2"/>
+                                <Slider x:Name="DeleteWidthSlider" Minimum="50" Maximum="500" Value="200"/>
+                                <TextBlock Text="{Binding ElementName=DeleteWidthSlider, Path=Value, StringFormat={}{0:F0}}" HorizontalAlignment="Center"/>
+
+                                <TextBlock Text="Height:" Margin="0,10,0,2"/>
+                                <Slider x:Name="DeleteHeightSlider" Minimum="20" Maximum="100" Value="30"/>
+                                <TextBlock Text="{Binding ElementName=DeleteHeightSlider, Path=Value, StringFormat={}{0:F0}}" HorizontalAlignment="Center"/>
+
+                                <Button Click="DeleteText_Click" Content="🗑️ Delete Text" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Cover Area with Color -->
+                        <GroupBox Header="Cover Area with Rectangle" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="Draw a colored rectangle to cover content" Margin="0,5,0,10" TextWrapping="Wrap" FontSize="11" Foreground="Gray"/>
+
+                                <TextBlock Text="Page Number:" Margin="0,5,0,2"/>
+                                <TextBox x:Name="CoverPageBox" Text="1"/>
+
+                                <TextBlock Text="X Position:" Margin="0,10,0,2"/>
+                                <Slider x:Name="CoverXSlider" Minimum="0" Maximum="595" Value="50"/>
+                                <TextBlock Text="{Binding ElementName=CoverXSlider, Path=Value, StringFormat={}{0:F0}}" HorizontalAlignment="Center"/>
+
+                                <TextBlock Text="Y Position:" Margin="0,10,0,2"/>
+                                <Slider x:Name="CoverYSlider" Minimum="0" Maximum="842" Value="700"/>
+                                <TextBlock Text="{Binding ElementName=CoverYSlider, Path=Value, StringFormat={}{0:F0}}" HorizontalAlignment="Center"/>
+
+                                <TextBlock Text="Width:" Margin="0,10,0,2"/>
+                                <Slider x:Name="CoverWidthSlider" Minimum="10" Maximum="595" Value="200"/>
+                                <TextBlock Text="{Binding ElementName=CoverWidthSlider, Path=Value, StringFormat={}{0:F0}}" HorizontalAlignment="Center"/>
+
+                                <TextBlock Text="Height:" Margin="0,10,0,2"/>
+                                <Slider x:Name="CoverHeightSlider" Minimum="10" Maximum="842" Value="100"/>
+                                <TextBlock Text="{Binding ElementName=CoverHeightSlider, Path=Value, StringFormat={}{0:F0}}" HorizontalAlignment="Center"/>
+
+                                <TextBlock Text="Fill Color:" Margin="0,10,0,2"/>
+                                <ComboBox x:Name="CoverColorCombo" SelectedIndex="0">
+                                    <ComboBoxItem Content="White (Erase)"/>
+                                    <ComboBoxItem Content="Black"/>
+                                    <ComboBoxItem Content="Red"/>
+                                    <ComboBoxItem Content="Blue"/>
+                                    <ComboBoxItem Content="Green"/>
+                                    <ComboBoxItem Content="Yellow"/>
+                                    <ComboBoxItem Content="Gray"/>
+                                    <ComboBoxItem Content="Light Gray"/>
+                                </ComboBox>
+
+                                <TextBlock Text="Opacity:" Margin="0,10,0,2"/>
+                                <Slider x:Name="CoverOpacitySlider" Minimum="0" Maximum="1" Value="1" TickFrequency="0.1"/>
+                                <TextBlock Text="{Binding ElementName=CoverOpacitySlider, Path=Value, StringFormat={}{0:P0}}" HorizontalAlignment="Center"/>
+
+                                <Button Click="CoverArea_Click" Content="🎨 Cover Area with Color" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Export Page as Image -->
+                        <GroupBox Header="Export Page as Image" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="Preview a page or save it as an image file" Margin="0,5,0,10" TextWrapping="Wrap" FontSize="11" Foreground="Gray"/>
+
+                                <TextBlock Text="Page Number:" Margin="0,5,0,2"/>
+                                <TextBox x:Name="ExportPageBox" Text="1"/>
+
+                                <TextBlock Text="Image Quality (DPI):" Margin="0,10,0,2"/>
+                                <ComboBox x:Name="ExportDpiCombo" SelectedIndex="1">
+                                    <ComboBoxItem Content="72 DPI (Screen)"/>
+                                    <ComboBoxItem Content="150 DPI (Standard)"/>
+                                    <ComboBoxItem Content="300 DPI (High Quality)"/>
+                                    <ComboBoxItem Content="600 DPI (Print Quality)"/>
+                                </ComboBox>
+
+                                <TextBlock Text="Format:" Margin="0,10,0,2"/>
+                                <ComboBox x:Name="ExportFormatCombo" SelectedIndex="0">
+                                    <ComboBoxItem Content="PNG"/>
+                                    <ComboBoxItem Content="JPEG"/>
+                                    <ComboBoxItem Content="BMP"/>
+                                </ComboBox>
+
+                                <Button Click="ExportPageAsImage_Click" Content="🖼️ Export Page as Image" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Right Panel - Instructions & History -->
+            <Border Grid.Column="1" Background="White" Padding="20">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="200"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Instructions -->
+                    <GroupBox Grid.Row="0" Header="How to Use" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock TextWrapping="Wrap" Margin="0,5">
+                                <Bold>Step 1:</Bold> Click "📂 Open PDF" to load a PDF file
+                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap" Margin="0,5">
+                                <Bold>Step 2:</Bold> Use the tools on the left to add text, images, or erase content
+                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap" Margin="0,5">
+                                <Bold>Step 3:</Bold> Click "💾 Apply Changes" to save your edited PDF
+                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap" Margin="0,10,0,5" FontSize="12" Foreground="#666">
+                                <Bold>Coordinate System:</Bold>
+                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap" Margin="0,0,0,5" FontSize="11" Foreground="#666">
+                                • X: 0 = Left edge, 595 = Right edge (A4 page)
+                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap" Margin="0,0,0,5" FontSize="11" Foreground="#666">
+                                • Y: 0 = Bottom, 842 = Top (PDF coordinates from bottom)
+                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap" Margin="0,0,0,5" FontSize="11" Foreground="#666">
+                                • For top of page: use Y around 750-800
+                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap" Margin="0,0,0,5" FontSize="11" Foreground="#666">
+                                • For bottom of page: use Y around 50-100
+                            </TextBlock>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Page Preview Info -->
+                    <GroupBox Grid.Row="1" Header="Page Reference" Margin="0,0,0,10">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <TextBlock x:Name="PageInfoText" TextWrapping="Wrap" Margin="5">
+                                    Open a PDF to see page information
+                                </TextBlock>
+
+                                <TextBlock Text="Standard A4 Page Layout:" FontWeight="Bold" Margin="5,15,5,5"/>
+                                <Border BorderBrush="#CCC" BorderThickness="1" Padding="10" Margin="5">
+                                    <StackPanel>
+                                        <TextBlock Text="Top of page: Y = 800" Foreground="#2196F3"/>
+                                        <TextBlock Text="Middle: Y = 400-450" Foreground="#4CAF50" Margin="0,5"/>
+                                        <TextBlock Text="Bottom: Y = 50-100" Foreground="#FF9800" Margin="0,5"/>
+                                        <TextBlock Text="" Margin="0,5"/>
+                                        <TextBlock Text="Left margin: X = 50" Foreground="#2196F3"/>
+                                        <TextBlock Text="Center: X = 250-300" Foreground="#4CAF50" Margin="0,5"/>
+                                        <TextBlock Text="Right: X = 500-550" Foreground="#FF9800" Margin="0,5"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </GroupBox>
+
+                    <!-- Edit History -->
+                    <GroupBox Grid.Row="2" Header="Pending Changes">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ListBox x:Name="EditHistoryList">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </ScrollViewer>
+                    </GroupBox>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="2" Background="#263238" Padding="10,5">
+            <TextBlock x:Name="StatusText"
+                     Text="Ready - Open a PDF file to start editing"
+                     Foreground="White"
+                     VerticalAlignment="Center"/>
+        </Border>
+    </Grid>
+</Window>

@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WhiteBoardMauiApp.MainPage"
+             Title="Whiteboard">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Open" Priority="0" Order="Primary" Clicked="OnOpenClicked" />
+        <ToolbarItem Text="Save" Priority="1" Order="Primary" Clicked="OnSaveClicked" />
+        <ToolbarItem Text="Clear" Priority="2" Order="Primary" Clicked="OnClearClicked" />
+        <ToolbarItem x:Name="ToolsToolbarItem" Text="Show Tools" Priority="3" Order="Primary" Clicked="OnToggleToolsClicked" />
+        <ToolbarItem Text="About" Priority="1" Order="Secondary" Clicked="OnAboutClicked" />
+        <ToolbarItem Text="Exit" Priority="0" Order="Secondary" Clicked="OnExitClicked" />
+    </ContentPage.ToolbarItems>
+
+    <Grid Padding="12" RowDefinitions="Auto,*" RowSpacing="10">
+        <VerticalStackLayout Grid.Row="0" x:Name="ToolsPanel" IsVisible="False" Spacing="8" Padding="0,6,0,0">
+            <Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="8">
+                <Label Grid.Column="0" Text="Tool" VerticalTextAlignment="Center" />
+                <Picker Grid.Column="1" x:Name="ToolPicker" SelectedIndexChanged="OnToolChanged" />
+                <Label Grid.Column="2" Text="Color" VerticalTextAlignment="Center" />
+                <Picker Grid.Column="3" x:Name="DrawColorPicker" SelectedIndexChanged="OnDrawColorChanged" />
+            </Grid>
+
+            <Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="8">
+                <Label Grid.Column="0" Text="Line" VerticalTextAlignment="Center" />
+                <Slider Grid.Column="1" x:Name="LineWidthSlider" Minimum="1" Maximum="30" Value="4" ValueChanged="OnLineWidthChanged" />
+                <Label Grid.Column="2" x:Name="LineWidthLabel" VerticalTextAlignment="Center" />
+                <Label Grid.Column="3" Text="" />
+            </Grid>
+
+            <Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="8">
+                <Label Grid.Column="0" Text="Eraser" VerticalTextAlignment="Center" />
+                <Slider Grid.Column="1" x:Name="EraserSizeSlider" Minimum="5" Maximum="60" Value="20" ValueChanged="OnEraserSizeChanged" />
+                <Label Grid.Column="2" x:Name="EraserSizeLabel" VerticalTextAlignment="Center" />
+                <Label Grid.Column="3" Text="" />
+            </Grid>
+
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                <Label Grid.Column="0" Text="Background" VerticalTextAlignment="Center" />
+                <Picker Grid.Column="1" x:Name="BackgroundColorPicker" SelectedIndexChanged="OnBackgroundColorChanged" />
+                <Button Grid.Column="2" Text="Set" Clicked="OnSetBackgroundClicked" />
+            </Grid>
+        </VerticalStackLayout>
+
+        <Border Grid.Row="1" StrokeThickness="1" Stroke="Gray">
+            <Grid x:Name="CanvasContainer">
+                <Image x:Name="BackgroundImageView" Aspect="AspectFill" />
+                <GraphicsView x:Name="CanvasView"
+                              StartInteraction="OnCanvasStartInteraction"
+                              DragInteraction="OnCanvasDragInteraction"
+                              EndInteraction="OnCanvasEndInteraction" />
+            </Grid>
+        </Border>
+    </Grid>
+
+</ContentPage>
