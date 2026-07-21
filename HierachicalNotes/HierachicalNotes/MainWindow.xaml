@@ -151,6 +151,9 @@
             <MenuItem Header="_File">
                 <MenuItem Header="_New" Click="_NewMenuItem_Click"/>
                 <MenuItem Header="_Open" Click="_OpenMenuItem_Click" />
+                <MenuItem Header="_Recent Files" Name="menuRecentFiles">
+                </MenuItem>
+                <Separator />
                 <MenuItem Header="_Save" Click="_SaveMenuItem_Click"/>
                 <MenuItem Header="_SaveAs" Click="_SaveAsMenuItem_Click"/>
                 <MenuItem Header="_SaveAsBackup" Click="_SaveAsBackupMenuItem_Click"/>

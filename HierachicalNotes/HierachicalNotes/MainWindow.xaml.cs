@@ -38,15 +38,18 @@ namespace HierachicalNotes
         TreeViewItem? _currSelectedNode = null;
         CurrentFileInfo _currFileInfo = new CurrentFileInfo();
         bool _enableSpellCheck = false;
+        RecentFilesManager _recentFilesManager = new RecentFilesManager();
         public MainWindow()
         {
             InitializeComponent();
             _currFileInfo._mainWindow = this;
+            _currFileInfo._recentFilesManager = _recentFilesManager;
             //ClearSearchResult();
             SetFileInfo();
             _currFileInfo.NewFile();
             ToTreeView();
             Closing += MainWindow_Closing;
+            UpdateRecentFilesMenu();
         }
 
         private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
@@ -447,6 +450,7 @@ namespace HierachicalNotes
               SetSelectedNode((treeView1.Items[0] as TreeViewItem));
             }
             SetFileInfo();
+            UpdateRecentFilesMenu();
             //ClearSearchResult();
         }
 
@@ -1043,6 +1047,68 @@ namespace HierachicalNotes
             }
             item.IsSelected = true;
         }
+
+        void UpdateRecentFilesMenu()
+        {
+            menuRecentFiles.Items.Clear();
+
+            List<string> recentFiles = _recentFilesManager.GetRecentFiles();
+
+            if (recentFiles.Count == 0)
+            {
+                MenuItem noFilesItem = new MenuItem();
+                noFilesItem.Header = "(No recent files)";
+                noFilesItem.IsEnabled = false;
+                menuRecentFiles.Items.Add(noFilesItem);
+            }
+            else
+            {
+                int index = 1;
+                foreach (string filePath in recentFiles)
+                {
+                    MenuItem menuItem = new MenuItem();
+                    menuItem.Header = $"_{index}. {System.IO.Path.GetFileName(filePath)}";
+                    menuItem.Tag = filePath;
+                    menuItem.ToolTip = filePath;
+                    menuItem.Click += RecentFileMenuItem_Click;
+                    menuRecentFiles.Items.Add(menuItem);
+                    index++;
+                }
+
+                menuRecentFiles.Items.Add(new Separator());
+
+                MenuItem clearItem = new MenuItem();
+                clearItem.Header = "Clear Recent Files";
+                clearItem.Click += ClearRecentFiles_Click;
+                menuRecentFiles.Items.Add(clearItem);
+            }
+        }
+
+        private void RecentFileMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem menuItem = sender as MenuItem;
+            if (menuItem != null && menuItem.Tag is string filePath)
+            {
+                _currFileInfo.OpenFile(filePath);
+                ToTreeView();
+                if (treeView1.Items.Count > 0)
+                {
+                    SetSelectedNode((treeView1.Items[0] as TreeViewItem));
+                }
+                SetFileInfo();
+                UpdateRecentFilesMenu();
+            }
+        }
+
+        private void ClearRecentFiles_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to clear the recent files list?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                _recentFilesManager.ClearRecentFiles();
+                UpdateRecentFilesMenu();
+            }
+        }
     }
 
     //public class TreeViewLineConverter : IValueConverter
@@ -1062,6 +1128,7 @@ namespace HierachicalNotes
     class CurrentFileInfo
     {
         public Window? _mainWindow { get; set; }
+        public RecentFilesManager? _recentFilesManager { get; set; }
         string? _currPassword = null;
         const string _passwordSalt = "k!k(HJe@!H^&{";
         public string? CurrentFileName { get; set; } = null;
@@ -1117,38 +1184,54 @@ namespace HierachicalNotes
             bool? dr = openFileDialog1.ShowDialog();
             if (dr == true)
             {
-                string? json = System.IO.File.ReadAllText(openFileDialog1.FileName);
-                HNoteFile tmpNoteFile = JsonSerializer.Deserialize<HNoteFile>(json);
-                if (tmpNoteFile.IsEncrypted)
+                OpenFile(openFileDialog1.FileName);
+            }
+        }
+
+        public void OpenFile(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName) || !System.IO.File.Exists(fileName))
+            {
+                MessageBox.Show("File does not exist.");
+                return;
+            }
+
+            string? json = System.IO.File.ReadAllText(fileName);
+            HNoteFile tmpNoteFile = JsonSerializer.Deserialize<HNoteFile>(json);
+            if (tmpNoteFile.IsEncrypted)
+            {
+                HierachicalNotes.PasswordDialog dlg = new HierachicalNotes.PasswordDialog();
+                dlg.DialogType = HierachicalNotes.PasswordDialog.PasswordDialogType.NeedPassword;
+                dlg.Owner = _mainWindow;
+                bool? result = dlg.ShowDialog();
+                if (result == true)
                 {
-                    HierachicalNotes.PasswordDialog dlg = new HierachicalNotes.PasswordDialog();
-                    dlg.DialogType = HierachicalNotes.PasswordDialog.PasswordDialogType.NeedPassword;
-                    dlg.Owner = _mainWindow;
-                    bool? result = dlg.ShowDialog();
-                    if (result == true)
+                    try
                     {
-                        try
-                        {
-                            string tmpjson = StringCipher.DecryptToString(tmpNoteFile.HNoteJsonStr, dlg.Password, _passwordSalt);
-                            tmpNoteFile.Notes = JsonSerializer.Deserialize<HNoteCollection>(tmpjson);
-                            CurrentNoteFile = tmpNoteFile;
-                            _currPassword = dlg.Password;
-                            CurrentNoteFile.SaveLatestNotesJson();
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                            return;
-                        }
+                        string tmpjson = StringCipher.DecryptToString(tmpNoteFile.HNoteJsonStr, dlg.Password, _passwordSalt);
+                        tmpNoteFile.Notes = JsonSerializer.Deserialize<HNoteCollection>(tmpjson);
+                        CurrentNoteFile = tmpNoteFile;
+                        _currPassword = dlg.Password;
+                        CurrentNoteFile.SaveLatestNotesJson();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                        return;
                     }
                 }
                 else
                 {
-                    CurrentNoteFile = tmpNoteFile;
-                    CurrentNoteFile.SaveLatestNotesJson();
+                    return;
                 }
-                CurrentFileName = openFileDialog1.FileName;
             }
+            else
+            {
+                CurrentNoteFile = tmpNoteFile;
+                CurrentNoteFile.SaveLatestNotesJson();
+            }
+            CurrentFileName = fileName;
+            _recentFilesManager?.AddRecentFile(fileName);
         }
 
         public void GatherCurrentNoteFileBeforeSave(HNoteCollection hNoteCollection)
@@ -1193,6 +1276,7 @@ namespace HierachicalNotes
                     MessageBox.Show("File saved");
                 }
                 CurrentNoteFile.SaveLatestNotesJson();
+                _recentFilesManager?.AddRecentFile(CurrentFileName);
             }
             else
             {
@@ -1206,6 +1290,7 @@ namespace HierachicalNotes
                         MessageBox.Show("File saved");
                     }
                     CurrentNoteFile.SaveLatestNotesJson();
+                    _recentFilesManager?.AddRecentFile(CurrentFileName);
                 }
             }
         }
