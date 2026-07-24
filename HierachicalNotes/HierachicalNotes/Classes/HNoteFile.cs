@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
@@ -13,7 +14,7 @@ namespace HierachicalNotes.Classes
 {
     public class HNoteFile
     {
-        string? latestNotesJson = null;
+        string? latestNotesHash = null;
         public bool IsEncrypted { get; set; }
         public string? HNoteJsonStr { get; set; }
         public HNoteCollection? Notes { get; set; }
@@ -23,28 +24,48 @@ namespace HierachicalNotes.Classes
         }
         public void SaveLatestNotesJson()
         {
-            latestNotesJson = GetNotesJson();
+            latestNotesHash = ComputeContentHash();
         }
         public bool IsChangedSinceLastSave()
         {
-            string? tmp = GetNotesJson();
-            if (tmp == latestNotesJson) return false;
-            return true;
+            string? currentHash = ComputeContentHash();
+            return currentHash != latestNotesHash;
         }
-        string? GetNotesJson()
+
+        private string? ComputeContentHash()
         {
+            if (Notes == null && string.IsNullOrEmpty(HNoteJsonStr))
+                return null;
+
             if (IsEncrypted)
             {
-                return HNoteJsonStr;
-
+                return ComputeHash(HNoteJsonStr);
             }
             else
             {
                 if (Notes == null) return null;
-                JsonSerializerOptions options = new JsonSerializerOptions();
-                options.WriteIndented = true;
+
+                JsonSerializerOptions options = new JsonSerializerOptions
+                {
+                    WriteIndented = false,
+                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never,
+                    PropertyNamingPolicy = null
+                };
                 string json = JsonSerializer.Serialize(Notes, options);
-                return json; ;
+                return ComputeHash(json);
+            }
+        }
+
+        private string? ComputeHash(string? input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return null;
+
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(input);
+                byte[] hash = sha256.ComputeHash(bytes);
+                return Convert.ToBase64String(hash);
             }
         }
     }

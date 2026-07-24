@@ -461,6 +461,7 @@ namespace HierachicalNotes
             hNodeCollection.RootNodes = FromTreeNodeCollection(treeView1.Items);
             _currFileInfo.SaveFile(hNodeCollection);
             SetFileInfo();
+            UpdateRecentFilesMenu();
         }
         private void _SaveAsMenuItem_Click(object sender, RoutedEventArgs e)
         {
@@ -469,6 +470,7 @@ namespace HierachicalNotes
             hNodeCollection.RootNodes = FromTreeNodeCollection(treeView1.Items);
             _currFileInfo.SaveFile(hNodeCollection, true);
             SetFileInfo();
+            UpdateRecentFilesMenu();
         }
         private void _SaveAsBackupMenuItem_Click(object sender, RoutedEventArgs e)
         {

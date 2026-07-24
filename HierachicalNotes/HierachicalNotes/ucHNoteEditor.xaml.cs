@@ -58,17 +58,46 @@ namespace HierachicalNotes
             {
                 _hNode = new HNote();
             }
-            else
+
+            string newName = tbName.Text.Trim();
+            string newKeywords = tbKeywords.Text.Trim();
+            string newContent = tbContent.Text;
+            string newPassword = tbPassword.Password;
+
+            // Check if content actually changed (normalize for comparison)
+            bool nameChanged = NormalizeString(_hNode.Name) != newName;
+            bool keywordsChanged = NormalizeString(_hNode.Keywords) != newKeywords;
+            bool contentChanged = NormalizeContent(_hNode.Content) != NormalizeContent(newContent);
+            bool passwordChanged = NormalizeString(_hNode.Password) != newPassword;
+
+            bool hasChanged = nameChanged || keywordsChanged || contentChanged || passwordChanged;
+
+            if(hasChanged)
             {
-                if(_hNode.Name != tbName.Text.Trim() || _hNode.Keywords != tbKeywords.Text.Trim() || _hNode.Content != tbContent.Text.Trim() || _hNode.Password != tbPassword.Password)
-                {
-                    _hNode.UpdateTime = DateTime.Now;
-                }
+                _hNode.UpdateTime = DateTime.Now;
             }
-            _hNode.Name = tbName.Text.Trim();
-            _hNode.Keywords = tbKeywords.Text.Trim();
-            _hNode.Content = tbContent.Text;
-            _hNode.Password=tbPassword.Password;
+
+            // Only update fields that actually changed, preserving original null vs "" distinction
+            if (nameChanged)
+                _hNode.Name = string.IsNullOrWhiteSpace(newName) ? null : newName;
+            if (keywordsChanged)
+                _hNode.Keywords = string.IsNullOrWhiteSpace(newKeywords) ? null : newKeywords;
+            if (contentChanged)
+                _hNode.Content = string.IsNullOrEmpty(newContent) ? null : newContent;
+            if (passwordChanged)
+                _hNode.Password = string.IsNullOrEmpty(newPassword) ? null : newPassword;
+        }
+
+        private string NormalizeString(string? text)
+        {
+            return text ?? string.Empty;
+        }
+
+        private string NormalizeContent(string? text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return string.Empty;
+            return text.Replace("\r\n", "\n").Replace("\r", "\n");
         }
         void setToUI(HNote node)
         {
