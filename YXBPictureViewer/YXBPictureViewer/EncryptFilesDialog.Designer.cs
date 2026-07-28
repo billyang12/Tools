@@ -90,7 +90,14 @@ namespace YXBPictureViewer
             "bmp",
             "gif",
             "tif",
-            "tiff"});
+            "tiff",
+            "mp4",
+            "avi",
+            "wmv",
+            "mov",
+            "mkv",
+            "mpeg",
+            "mpg"});
             this.cmbSourceExtension.Location = new System.Drawing.Point(20, 100);
             this.cmbSourceExtension.Name = "cmbSourceExtension";
             this.cmbSourceExtension.Size = new System.Drawing.Size(240, 23);

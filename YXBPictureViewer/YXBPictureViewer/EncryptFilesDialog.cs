@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace YXBPictureViewer
@@ -14,6 +16,7 @@ namespace YXBPictureViewer
 
         private string ypgPassword;
         private string xpgPassword;
+        private bool cancelRequested = false;
 
         public EncryptFilesDialog(string ypgPass, string xpgPass)
         {
@@ -60,7 +63,28 @@ namespace YXBPictureViewer
 
             // Validate encryption type and password
             bool encryptToYpg = (cmbEncryptionType.SelectedIndex == 0);
-            string targetExtension = encryptToYpg ? "ypg" : "xpg";
+
+            // Determine if source is video format
+            string sourceExt = cmbSourceExtension.Text.Trim();
+            if (sourceExt.StartsWith("."))
+            {
+                sourceExt = sourceExt.Substring(1);
+            }
+
+            bool isVideoFormat = IsVideoFormat(sourceExt);
+
+            // Use .xpv for videos, .xpg or .ypg for images
+            string targetExtension;
+            if (isVideoFormat)
+            {
+                targetExtension = "xpv"; // Video files always use XPV (AES only)
+                encryptToYpg = false; // Force AES for videos
+            }
+            else
+            {
+                targetExtension = encryptToYpg ? "ypg" : "xpg";
+            }
+
             string password = encryptToYpg ? ypgPassword : xpgPassword;
 
             if (string.IsNullOrWhiteSpace(password))
@@ -68,13 +92,6 @@ namespace YXBPictureViewer
                 MessageBox.Show($"Please set the {targetExtension.ToUpper()} password in the main window first.",
                     "Password Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
-            }
-
-            // Get source extension
-            string sourceExt = cmbSourceExtension.Text.Trim();
-            if (sourceExt.StartsWith("."))
-            {
-                sourceExt = sourceExt.Substring(1);
             }
 
             // Confirm operation
@@ -89,105 +106,179 @@ namespace YXBPictureViewer
             if (result != DialogResult.Yes)
                 return;
 
-            // Perform encryption
-            try
+            // Perform encryption with progress dialog
+            EncryptWithProgress(
+                txtFolder.Text,
+                sourceExt,
+                targetExtension,
+                password,
+                chkIncludeSubfolders.Checked,
+                chkDeleteOriginal.Checked,
+                encryptToYpg
+            );
+        }
+
+        /// <summary>
+        /// Encrypt files with progress dialog running in background
+        /// </summary>
+        private async void EncryptWithProgress(string directory, string sourceExt, string targetExt,
+            string password, bool includeSubdirs, bool deleteOriginal, bool useOldMethod)
+        {
+            cancelRequested = false;
+
+            using (ProgressDialog progressDlg = new ProgressDialog("Encrypting Files"))
             {
-                FilesProcessed = EncryptAllFiles(
-                    txtFolder.Text,
-                    sourceExt,
-                    targetExtension,
-                    password,
-                    chkIncludeSubfolders.Checked,
-                    chkDeleteOriginal.Checked,
-                    encryptToYpg
-                );
+                progressDlg.Show(this);
+                progressDlg.SetStatus("Scanning for files...");
 
-                TargetDirectory = txtFolder.Text;
+                try
+                {
+                    // First, collect all files to process
+                    List<string> allFiles = await Task.Run(() =>
+                        CollectFiles(directory, sourceExt, includeSubdirs));
 
-                MessageBox.Show($"Successfully encrypted {FilesProcessed} files.",
-                    "Encryption Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (allFiles.Count == 0)
+                    {
+                        progressDlg.Close();
+                        MessageBox.Show($"No .{sourceExt} files found in the selected folder.",
+                            "No Files Found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
 
-                this.DialogResult = DialogResult.OK;
-                this.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error during encryption:\n{ex.Message}",
-                    "Encryption Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // Process files with progress updates
+                    FilesProcessed = await Task.Run(() =>
+                        EncryptAllFilesWithProgress(allFiles, targetExt, password, deleteOriginal,
+                            useOldMethod, progressDlg));
+
+                    progressDlg.Close();
+
+                    if (cancelRequested)
+                    {
+                        MessageBox.Show($"Encryption cancelled. {FilesProcessed} files processed.",
+                            "Encryption Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        TargetDirectory = directory;
+                        MessageBox.Show($"Successfully encrypted {FilesProcessed} files.",
+                            "Encryption Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        this.DialogResult = DialogResult.OK;
+                        this.Close();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    progressDlg.Close();
+                    MessageBox.Show($"Error during encryption:\n{ex.Message}",
+                        "Encryption Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
         /// <summary>
-        /// Encrypt all files with given extension in directory
+        /// Collect all files to be processed
         /// </summary>
-        private int EncryptAllFiles(string directory, string sourceExt, string targetExt,
-            string password, bool includeSubdirs, bool deleteOriginal, bool useOldMethod)
+        private List<string> CollectFiles(string directory, string sourceExt, bool includeSubdirs)
         {
-            int count = 0;
+            List<string> files = new List<string>();
 
             try
             {
-                // Find all files with source extension
-                string[] files = Directory.GetFiles(directory, $"*.{sourceExt}");
+                SearchOption searchOption = includeSubdirs ?
+                    SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
-                foreach (string file in files)
-                {
-                    try
-                    {
-                        // Build output filename
-                        string outputFile = Path.Combine(
-                            Path.GetDirectoryName(file),
-                            Path.GetFileNameWithoutExtension(file) + $".{targetExt}"
-                        );
-
-                        // Encrypt using appropriate method
-                        if (useOldMethod)
-                        {
-                            YEncrypt.EncryptFile(file, outputFile, password);
-                        }
-                        else
-                        {
-                            YAESEncrypt.EncryptFile(file, outputFile, password);
-                        }
-
-                        count++;
-
-                        // Delete original if requested
-                        if (deleteOriginal)
-                        {
-                            try
-                            {
-                                File.Delete(file);
-                            }
-                            catch (Exception ex)
-                            {
-                                System.Diagnostics.Debug.WriteLine($"Could not delete {file}: {ex.Message}");
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Error encrypting {file}: {ex.Message}");
-                    }
-                }
-
-                // Process subdirectories if requested
-                if (includeSubdirs)
-                {
-                    string[] subdirs = Directory.GetDirectories(directory);
-                    foreach (string subdir in subdirs)
-                    {
-                        count += EncryptAllFiles(subdir, sourceExt, targetExt, password,
-                            includeSubdirs, deleteOriginal, useOldMethod);
-                    }
-                }
+                string[] foundFiles = Directory.GetFiles(directory, $"*.{sourceExt}", searchOption);
+                files.AddRange(foundFiles);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error processing directory {directory}: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error collecting files: {ex.Message}");
+            }
+
+            return files;
+        }
+
+        /// <summary>
+        /// Encrypt all files with progress reporting
+        /// </summary>
+        private int EncryptAllFilesWithProgress(List<string> files, string targetExt,
+            string password, bool deleteOriginal, bool useOldMethod, ProgressDialog progressDlg)
+        {
+            int count = 0;
+            int total = files.Count;
+
+            for (int i = 0; i < total; i++)
+            {
+                if (progressDlg.CancelRequested)
+                {
+                    cancelRequested = true;
+                    break;
+                }
+
+                string file = files[i];
+
+                try
+                {
+                    // Update progress
+                    progressDlg.UpdateProgress(i + 1, total,
+                        $"Encrypting: {Path.GetFileName(file)}");
+
+                    // Build output filename
+                    string outputFile = Path.Combine(
+                        Path.GetDirectoryName(file),
+                        Path.GetFileNameWithoutExtension(file) + $".{targetExt}"
+                    );
+
+                    // Encrypt using appropriate method
+                    if (useOldMethod)
+                    {
+                        YEncrypt.EncryptFile(file, outputFile, password);
+                    }
+                    else
+                    {
+                        YAESEncrypt.EncryptFile(file, outputFile, password);
+                    }
+
+                    count++;
+
+                    // Delete original if requested
+                    if (deleteOriginal)
+                    {
+                        try
+                        {
+                            File.Delete(file);
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Could not delete {file}: {ex.Message}");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error encrypting {file}: {ex.Message}");
+                }
             }
 
             return count;
+        }
+
+        /// <summary>
+        /// Check if file extension is a video format
+        /// </summary>
+        private bool IsVideoFormat(string extension)
+        {
+            extension = extension.ToLower().TrimStart('.');
+            string[] videoExtensions = { "mp4", "avi", "wmv", "mov", "mkv", "mpeg", "mpg" };
+
+            foreach (string ext in videoExtensions)
+            {
+                if (extension == ext)
+                    return true;
+            }
+
+            return false;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)

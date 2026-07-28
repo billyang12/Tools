@@ -9,4 +9,9 @@
     <!-- Suppress CA1416 warnings - this is a Windows-only WinForms application -->
     <NoWarn>$(NoWarn);CA1416;CA2022</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LibVLCSharp.WinForms" Version="3.9.0" />
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.21" />
+  </ItemGroup>
 </Project>

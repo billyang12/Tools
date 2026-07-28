@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using LibVLCSharp.Shared;
 
 namespace YXBPictureViewer
 {
@@ -16,11 +18,17 @@ namespace YXBPictureViewer
         private bool isPanelExpanded = true;
         private int expandedHeight = 180;
         private int collapsedHeight = 40;
+        private string currentTempVideoFile = null;
+        private LibVLC libVLC;
+        private MediaPlayer vlcMediaPlayer;
+        private System.Windows.Forms.Timer videoProgressTimer;
+        private bool isDraggingVideoProgress = false;
 
         public MainForm()
         {
             InitializeComponent();
             InitializeCustomComponents();
+            InitializeVLC();
         }
 
         /// <summary>
@@ -38,8 +46,148 @@ namespace YXBPictureViewer
         }
 
         /// <summary>
-        /// Browse for folder button click
+        /// Initialize LibVLC for video playback
         /// </summary>
+        private void InitializeVLC()
+        {
+            try
+            {
+                Core.Initialize();
+                libVLC = new LibVLC();
+                vlcMediaPlayer = new MediaPlayer(libVLC)
+                {
+                    Mute = false,
+                    Volume = 100
+                };
+                mediaPlayer.MediaPlayer = vlcMediaPlayer;
+
+                // Handle media ended event for cleanup
+                vlcMediaPlayer.EndReached += VlcMediaPlayer_EndReached;
+                vlcMediaPlayer.Playing += VlcMediaPlayer_Playing;
+                vlcMediaPlayer.Paused += VlcMediaPlayer_Paused;
+                vlcMediaPlayer.Stopped += VlcMediaPlayer_Paused;
+
+                videoProgressTimer = new System.Windows.Forms.Timer();
+                videoProgressTimer.Interval = 250;
+                videoProgressTimer.Tick += VideoProgressTimer_Tick;
+                videoProgressTimer.Start();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error initializing VLC: {ex.Message}");
+            }
+        }
+
+        private void VlcMediaPlayer_EndReached(object sender, EventArgs e)
+        {
+            CleanupTempVideoFile();
+
+            if (IsHandleCreated)
+            {
+                BeginInvoke(new Action(() =>
+                {
+                    btnPlayPause.Text = "Play";
+                }));
+            }
+        }
+
+        private void VlcMediaPlayer_Playing(object sender, EventArgs e)
+        {
+            if (IsHandleCreated)
+            {
+                BeginInvoke(new Action(() => btnPlayPause.Text = "Pause"));
+            }
+        }
+
+        private void VlcMediaPlayer_Paused(object sender, EventArgs e)
+        {
+            if (IsHandleCreated)
+            {
+                BeginInvoke(new Action(() => btnPlayPause.Text = "Play"));
+            }
+        }
+
+        /// <summary>
+        /// Update the video progress bar and time label
+        /// </summary>
+        private void VideoProgressTimer_Tick(object sender, EventArgs e)
+        {
+            if (vlcMediaPlayer == null || !mediaPlayer.Visible)
+                return;
+
+            long length = vlcMediaPlayer.Length;
+
+            if (length <= 0)
+                return;
+
+            if (!isDraggingVideoProgress)
+            {
+                double position = vlcMediaPlayer.Position;
+                int value = (int)(position * trackVideoProgress.Maximum);
+                value = Math.Max(trackVideoProgress.Minimum, Math.Min(trackVideoProgress.Maximum, value));
+                trackVideoProgress.Value = value;
+            }
+
+            lblVideoTime.Text = $"{FormatTime(vlcMediaPlayer.Time)} / {FormatTime(length)}";
+        }
+
+        private static string FormatTime(long milliseconds)
+        {
+            TimeSpan span = TimeSpan.FromMilliseconds(Math.Max(0, milliseconds));
+            return span.Hours > 0
+                ? span.ToString(@"hh\:mm\:ss")
+                : span.ToString(@"mm\:ss");
+        }
+
+        /// <summary>
+        /// Play/Pause button click
+        /// </summary>
+        private void btnPlayPause_Click(object sender, EventArgs e)
+        {
+            if (vlcMediaPlayer == null)
+                return;
+
+            if (vlcMediaPlayer.IsPlaying)
+            {
+                vlcMediaPlayer.Pause();
+            }
+            else
+            {
+                vlcMediaPlayer.Play();
+            }
+        }
+
+        private void trackVideoProgress_MouseDown(object sender, MouseEventArgs e)
+        {
+            isDraggingVideoProgress = true;
+        }
+
+        private void trackVideoProgress_MouseUp(object sender, MouseEventArgs e)
+        {
+            isDraggingVideoProgress = false;
+            SeekVideoToTrackPosition();
+        }
+
+        private void trackVideoProgress_Scroll(object sender, EventArgs e)
+        {
+            if (!isDraggingVideoProgress)
+            {
+                SeekVideoToTrackPosition();
+            }
+        }
+
+        private void SeekVideoToTrackPosition()
+        {
+            if (vlcMediaPlayer == null || vlcMediaPlayer.Length <= 0)
+                return;
+
+            float position = (float)trackVideoProgress.Value / trackVideoProgress.Maximum;
+            vlcMediaPlayer.Position = position;
+        }
+
+        /// <summary>
+        /// Browse for folder button click
+
         private void btnBrowseFolder_Click(object sender, EventArgs e)
         {
             try
@@ -180,9 +328,26 @@ namespace YXBPictureViewer
         private bool IsImageOrEncryptedFile(string extension)
         {
             extension = extension.ToLower();
-            string[] validExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tif", ".tiff", ".ypg", ".xpg" };
+            string[] validExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tif", ".tiff", ".ypg", ".xpg", ".xpv", ".mp4", ".avi", ".wmv", ".mov", ".mkv", ".mpeg", ".mpg" };
 
             foreach (string ext in validExtensions)
+            {
+                if (extension == ext)
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if file extension is a video file
+        /// </summary>
+        private bool IsVideoFile(string extension)
+        {
+            extension = extension.ToLower();
+            string[] videoExtensions = { ".xpv", ".mp4", ".avi", ".wmv", ".mov", ".mkv", ".mpeg", ".mpg" };
+
+            foreach (string ext in videoExtensions)
             {
                 if (extension == ext)
                     return true;
@@ -204,7 +369,15 @@ namespace YXBPictureViewer
             // Only display files, not folders
             if (File.Exists(path))
             {
-                DisplayImage(path);
+                string extension = Path.GetExtension(path).ToLower();
+                if (IsVideoFile(extension))
+                {
+                    PlayVideo(path);
+                }
+                else
+                {
+                    DisplayImage(path);
+                }
             }
         }
 
@@ -355,6 +528,16 @@ namespace YXBPictureViewer
         {
             try
             {
+                // Hide video player, show image viewer
+                mediaPlayer.Visible = false;
+                panelVideoControls.Visible = false;
+                pictureBox.Visible = true;
+
+                if (vlcMediaPlayer != null && vlcMediaPlayer.IsPlaying)
+                {
+                    vlcMediaPlayer.Stop();
+                }
+
                 // Clear previous image
                 if (pictureBox.Image != null)
                 {
@@ -497,33 +680,101 @@ namespace YXBPictureViewer
 
                     bool includeSubdirs = (confirm == DialogResult.Yes);
 
-                    try
-                    {
-                        int count = FileConverter.ConvertAllYPGInDirectory(
-                            dialog.SelectedPath,
-                            txtYpgPassword.Text,
-                            txtXpgPassword.Text,
-                            includeSubdirs,
-                            deleteOriginal: false // Safety: don't delete originals
-                        );
+                    // Convert with progress
+                    ConvertYpgToXpgWithProgress(dialog.SelectedPath, includeSubdirs);
+                }
+            }
+        }
 
+        /// <summary>
+        /// Convert YPG to XPG with progress dialog
+        /// </summary>
+        private async void ConvertYpgToXpgWithProgress(string directory, bool includeSubdirs)
+        {
+            using (ProgressDialog progressDlg = new ProgressDialog("Converting YPG to XPG"))
+            {
+                progressDlg.Show(this);
+                progressDlg.SetStatus("Scanning for .ypg files...");
+
+                try
+                {
+                    // Collect files
+                    List<string> ypgFiles = await Task.Run(() =>
+                    {
+                        SearchOption searchOption = includeSubdirs ?
+                            SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+                        return new List<string>(Directory.GetFiles(directory, "*.ypg", searchOption));
+                    });
+
+                    if (ypgFiles.Count == 0)
+                    {
+                        progressDlg.Close();
+                        MessageBox.Show("No .ypg files found in the selected folder.",
+                            "No Files Found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+
+                    // Convert files
+                    int count = await Task.Run(() =>
+                    {
+                        int converted = 0;
+                        for (int i = 0; i < ypgFiles.Count; i++)
+                        {
+                            if (progressDlg.CancelRequested)
+                                break;
+
+                            string ypgFile = ypgFiles[i];
+                            progressDlg.UpdateProgress(i + 1, ypgFiles.Count,
+                                $"Converting: {Path.GetFileName(ypgFile)}");
+
+                            string xpgFile = Path.Combine(
+                                Path.GetDirectoryName(ypgFile),
+                                Path.GetFileNameWithoutExtension(ypgFile) + ".xpg"
+                            );
+
+                            try
+                            {
+                                if (FileConverter.ConvertYPGtoXPG(ypgFile, xpgFile,
+                                    txtYpgPassword.Text, txtXpgPassword.Text))
+                                {
+                                    converted++;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Error converting {ypgFile}: {ex.Message}");
+                            }
+                        }
+                        return converted;
+                    });
+
+                    progressDlg.Close();
+
+                    if (progressDlg.CancelRequested)
+                    {
+                        MessageBox.Show($"Conversion cancelled. {count} files converted.",
+                            "Conversion Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
                         MessageBox.Show($"Successfully converted {count} files from .ypg to .xpg",
                             "Conversion Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        lblStatus.Text = $"Converted {count} files";
-
-                        // Reload if converted current folder
-                        if (!string.IsNullOrEmpty(currentRootPath) &&
-                            dialog.SelectedPath.StartsWith(currentRootPath))
-                        {
-                            LoadFolder(currentRootPath);
-                        }
                     }
-                    catch (Exception ex)
+
+                    lblStatus.Text = $"Converted {count} files";
+
+                    // Reload if converted current folder
+                    if (!string.IsNullOrEmpty(currentRootPath) &&
+                        directory.StartsWith(currentRootPath))
                     {
-                        MessageBox.Show($"Error during conversion:\n{ex.Message}",
-                            "Conversion Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        LoadFolder(currentRootPath);
                     }
+                }
+                catch (Exception ex)
+                {
+                    progressDlg.Close();
+                    MessageBox.Show($"Error during conversion:\n{ex.Message}",
+                        "Conversion Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -820,6 +1071,109 @@ namespace YXBPictureViewer
         }
 
         /// <summary>
+        /// Play video file (encrypted or unencrypted)
+        /// </summary>
+        private void PlayVideo(string filePath)
+        {
+            try
+            {
+                // Hide image viewer, show video player
+                pictureBox.Visible = false;
+                mediaPlayer.Visible = true;
+                panelVideoControls.Visible = true;
+                trackVideoProgress.Value = trackVideoProgress.Minimum;
+                lblVideoTime.Text = "00:00 / 00:00";
+                btnPlayPause.Text = "Play";
+
+                string extension = Path.GetExtension(filePath).ToLower();
+                string tempVideoFile = null;
+
+                if (extension == ".xpv")
+                {
+                    // Decrypt encrypted video file
+                    string xpgPassword = txtXpgPassword.Text;
+
+                    if (string.IsNullOrWhiteSpace(xpgPassword))
+                    {
+                        MessageBox.Show("Please enter XPG password (AES key) to decrypt .xpv files.",
+                            "Password Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        pictureBox.Visible = true;
+                        mediaPlayer.Visible = false;
+                        panelVideoControls.Visible = false;
+                        return;
+                    }
+
+                    lblStatus.Text = "Decrypting video...";
+                    Application.DoEvents();
+
+                    byte[] videoData = YAESEncrypt.DecryptFileToBuffer(filePath, xpgPassword);
+
+                    if (videoData == null || videoData.Length == 0)
+                    {
+                        throw new Exception("Decryption returned empty data. Check your XPG password.");
+                    }
+
+                    // Save to temp file
+                    tempVideoFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".mp4");
+                    File.WriteAllBytes(tempVideoFile, videoData);
+
+                    lblStatus.Text = $"Playing (XPV/AES): {Path.GetFileName(filePath)}";
+                }
+                else
+                {
+                    // Play unencrypted video directly
+                    tempVideoFile = filePath;
+                    lblStatus.Text = $"Playing (unencrypted): {Path.GetFileName(filePath)}";
+                }
+
+                // Clean up previous temp file
+                CleanupTempVideoFile();
+                currentTempVideoFile = tempVideoFile;
+
+                // Load video with LibVLC, but start paused so playback only begins
+                // when the user clicks the Play button
+                using (var media = new Media(libVLC, tempVideoFile))
+                {
+                    media.AddOption(":start-paused");
+                    vlcMediaPlayer.Play(media);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error playing video:\n\n{ex.Message}\n\nFile: {Path.GetFileName(filePath)}",
+                    "Playback Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                pictureBox.Visible = true;
+                mediaPlayer.Visible = false;
+                panelVideoControls.Visible = false;
+                lblStatus.Text = $"Error: {ex.Message}";
+            }
+        }
+
+        /// <summary>
+        /// Clean up temporary video file
+        /// </summary>
+        private void CleanupTempVideoFile()
+        {
+            if (!string.IsNullOrEmpty(currentTempVideoFile) && File.Exists(currentTempVideoFile))
+            {
+                try
+                {
+                    // Only delete if it's in temp folder (not an unencrypted video)
+                    if (currentTempVideoFile.StartsWith(Path.GetTempPath()))
+                    {
+                        File.Delete(currentTempVideoFile);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error deleting temp video file: {ex.Message}");
+                }
+            }
+            currentTempVideoFile = null;
+        }
+
+        /// <summary>
         /// Form closing - cleanup
         /// </summary>
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -829,6 +1183,26 @@ namespace YXBPictureViewer
                 pictureBox.Image.Dispose();
                 pictureBox.Image = null;
             }
+
+            if (videoProgressTimer != null)
+            {
+                videoProgressTimer.Stop();
+                videoProgressTimer.Dispose();
+            }
+
+            // Stop media player and cleanup temp files
+            if (vlcMediaPlayer != null)
+            {
+                vlcMediaPlayer.Stop();
+                vlcMediaPlayer.Dispose();
+            }
+
+            if (libVLC != null)
+            {
+                libVLC.Dispose();
+            }
+
+            CleanupTempVideoFile();
 
             base.OnFormClosing(e);
         }

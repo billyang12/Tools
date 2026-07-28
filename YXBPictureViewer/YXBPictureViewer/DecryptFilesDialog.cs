@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace YXBPictureViewer
@@ -13,6 +15,7 @@ namespace YXBPictureViewer
 
         private string ypgPassword;
         private string xpgPassword;
+        private bool cancelRequested = false;
 
         public DecryptFilesDialog(string ypgPass, string xpgPass)
         {
@@ -60,6 +63,7 @@ namespace YXBPictureViewer
             int fileTypeIndex = cmbFileType.SelectedIndex;
             bool processYpg = (fileTypeIndex == 0 || fileTypeIndex == 1); // Both or YPG only
             bool processXpg = (fileTypeIndex == 0 || fileTypeIndex == 2); // Both or XPG only
+            bool processXpv = (fileTypeIndex == 0 || fileTypeIndex == 2); // Include XPV with XPG (same password)
 
             if (processYpg && string.IsNullOrWhiteSpace(ypgPassword))
             {
@@ -83,7 +87,7 @@ namespace YXBPictureViewer
             }
 
             // Confirm operation
-            string fileTypes = fileTypeIndex == 1 ? ".ypg" : fileTypeIndex == 2 ? ".xpg" : ".ypg and .xpg";
+            string fileTypes = fileTypeIndex == 1 ? ".ypg" : fileTypeIndex == 2 ? ".xpg/.xpv" : ".ypg, .xpg, and .xpv";
             string message = $"Decrypt all {fileTypes} files to .{outputExt} in:\n{txtFolder.Text}\n\n";
             message += $"Include subfolders: {(chkIncludeSubfolders.Checked ? "Yes" : "No")}\n";
             message += $"Delete originals: {(chkDeleteOriginal.Checked ? "YES - BE CAREFUL!" : "No")}\n\n";
@@ -95,129 +99,174 @@ namespace YXBPictureViewer
             if (result != DialogResult.Yes)
                 return;
 
-            // Perform decryption
-            try
-            {
-                FilesProcessed = DecryptAllFiles(
-                    txtFolder.Text,
-                    outputExt,
-                    chkIncludeSubfolders.Checked,
-                    chkDeleteOriginal.Checked,
-                    processYpg,
-                    processXpg
-                );
+            // Perform decryption with progress
+            DecryptWithProgress(
+                txtFolder.Text,
+                outputExt,
+                chkIncludeSubfolders.Checked,
+                chkDeleteOriginal.Checked,
+                processYpg,
+                processXpg,
+                processXpv
+            );
+        }
 
-                MessageBox.Show($"Successfully decrypted {FilesProcessed} files.",
-                    "Decryption Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        /// <summary>
+        /// Decrypt files with progress dialog
+        /// </summary>
+        private async void DecryptWithProgress(string directory, string outputExt, bool includeSubdirs,
+            bool deleteOriginal, bool processYpg, bool processXpg, bool processXpv)
+        {
+            cancelRequested = false;
 
-                this.DialogResult = DialogResult.OK;
-                this.Close();
-            }
-            catch (Exception ex)
+            using (ProgressDialog progressDlg = new ProgressDialog("Decrypting Files"))
             {
-                MessageBox.Show($"Error during decryption:\n{ex.Message}",
-                    "Decryption Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                progressDlg.Show(this);
+                progressDlg.SetStatus("Scanning for files...");
+
+                try
+                {
+                    // Collect all files to process
+                    List<string> allFiles = await Task.Run(() =>
+                        CollectDecryptFiles(directory, includeSubdirs, processYpg, processXpg, processXpv));
+
+                    if (allFiles.Count == 0)
+                    {
+                        progressDlg.Close();
+                        MessageBox.Show("No encrypted files found in the selected folder.",
+                            "No Files Found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+
+                    // Process files with progress
+                    FilesProcessed = await Task.Run(() =>
+                        DecryptAllFilesWithProgress(allFiles, outputExt, deleteOriginal,
+                            processYpg, processXpg, progressDlg));
+
+                    progressDlg.Close();
+
+                    if (cancelRequested)
+                    {
+                        MessageBox.Show($"Decryption cancelled. {FilesProcessed} files processed.",
+                            "Decryption Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Successfully decrypted {FilesProcessed} files.",
+                            "Decryption Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        this.DialogResult = DialogResult.OK;
+                        this.Close();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    progressDlg.Close();
+                    MessageBox.Show($"Error during decryption:\n{ex.Message}",
+                        "Decryption Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
         /// <summary>
-        /// Decrypt all YPG/XPG files in directory
+        /// Collect all encrypted files to process
         /// </summary>
-        private int DecryptAllFiles(string directory, string outputExt, bool includeSubdirs,
-            bool deleteOriginal, bool processYpg, bool processXpg)
+        private List<string> CollectDecryptFiles(string directory, bool includeSubdirs,
+            bool processYpg, bool processXpg, bool processXpv)
         {
-            int count = 0;
+            List<string> files = new List<string>();
 
             try
             {
-                // Process YPG files
+                SearchOption searchOption = includeSubdirs ?
+                    SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+
                 if (processYpg)
                 {
-                    string[] ypgFiles = Directory.GetFiles(directory, "*.ypg");
-                    foreach (string file in ypgFiles)
-                    {
-                        try
-                        {
-                            string outputFile = Path.Combine(
-                                Path.GetDirectoryName(file),
-                                Path.GetFileNameWithoutExtension(file) + $".{outputExt}"
-                            );
-
-                            // Decrypt YPG file
-                            YEncrypt.DecryptFile(file, outputFile, ypgPassword);
-                            count++;
-
-                            // Delete original if requested
-                            if (deleteOriginal)
-                            {
-                                try
-                                {
-                                    File.Delete(file);
-                                }
-                                catch (Exception ex)
-                                {
-                                    System.Diagnostics.Debug.WriteLine($"Could not delete {file}: {ex.Message}");
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            System.Diagnostics.Debug.WriteLine($"Error decrypting {file}: {ex.Message}");
-                        }
-                    }
+                    string[] ypgFiles = Directory.GetFiles(directory, "*.ypg", searchOption);
+                    files.AddRange(ypgFiles);
                 }
 
-                // Process XPG files
                 if (processXpg)
                 {
-                    string[] xpgFiles = Directory.GetFiles(directory, "*.xpg");
-                    foreach (string file in xpgFiles)
-                    {
-                        try
-                        {
-                            string outputFile = Path.Combine(
-                                Path.GetDirectoryName(file),
-                                Path.GetFileNameWithoutExtension(file) + $".{outputExt}"
-                            );
-
-                            // Decrypt XPG file
-                            YAESEncrypt.DecryptFile(file, outputFile, xpgPassword);
-                            count++;
-
-                            // Delete original if requested
-                            if (deleteOriginal)
-                            {
-                                try
-                                {
-                                    File.Delete(file);
-                                }
-                                catch (Exception ex)
-                                {
-                                    System.Diagnostics.Debug.WriteLine($"Could not delete {file}: {ex.Message}");
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            System.Diagnostics.Debug.WriteLine($"Error decrypting {file}: {ex.Message}");
-                        }
-                    }
+                    string[] xpgFiles = Directory.GetFiles(directory, "*.xpg", searchOption);
+                    files.AddRange(xpgFiles);
                 }
 
-                // Process subdirectories if requested
-                if (includeSubdirs)
+                if (processXpv)
                 {
-                    string[] subdirs = Directory.GetDirectories(directory);
-                    foreach (string subdir in subdirs)
-                    {
-                        count += DecryptAllFiles(subdir, outputExt, includeSubdirs,
-                            deleteOriginal, processYpg, processXpg);
-                    }
+                    string[] xpvFiles = Directory.GetFiles(directory, "*.xpv", searchOption);
+                    files.AddRange(xpvFiles);
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error processing directory {directory}: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error collecting files: {ex.Message}");
+            }
+
+            return files;
+        }
+
+        /// <summary>
+        /// Decrypt all files with progress reporting
+        /// </summary>
+        private int DecryptAllFilesWithProgress(List<string> files, string outputExt,
+            bool deleteOriginal, bool processYpg, bool processXpg, ProgressDialog progressDlg)
+        {
+            int count = 0;
+            int total = files.Count;
+
+            for (int i = 0; i < total; i++)
+            {
+                if (progressDlg.CancelRequested)
+                {
+                    cancelRequested = true;
+                    break;
+                }
+
+                string file = files[i];
+                string extension = Path.GetExtension(file).ToLower();
+
+                try
+                {
+                    // Update progress
+                    progressDlg.UpdateProgress(i + 1, total,
+                        $"Decrypting: {Path.GetFileName(file)}");
+
+                    string outputFile = Path.Combine(
+                        Path.GetDirectoryName(file),
+                        Path.GetFileNameWithoutExtension(file) + $".{outputExt}"
+                    );
+
+                    // Decrypt based on file type
+                    if (extension == ".ypg")
+                    {
+                        YEncrypt.DecryptFile(file, outputFile, ypgPassword);
+                    }
+                    else if (extension == ".xpg" || extension == ".xpv")
+                    {
+                        YAESEncrypt.DecryptFile(file, outputFile, xpgPassword);
+                    }
+
+                    count++;
+
+                    // Delete original if requested
+                    if (deleteOriginal)
+                    {
+                        try
+                        {
+                            File.Delete(file);
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Could not delete {file}: {ex.Message}");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error decrypting {file}: {ex.Message}");
+                }
             }
 
             return count;

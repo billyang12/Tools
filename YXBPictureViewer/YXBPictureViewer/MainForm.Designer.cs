@@ -7,6 +7,11 @@ namespace YXBPictureViewer
         private System.Windows.Forms.TreeView tvFileExplorer;
         private System.Windows.Forms.Panel panelImageView;
         private System.Windows.Forms.PictureBox pictureBox;
+        private LibVLCSharp.WinForms.VideoView mediaPlayer;
+        private System.Windows.Forms.Panel panelVideoControls;
+        private System.Windows.Forms.Button btnPlayPause;
+        private System.Windows.Forms.TrackBar trackVideoProgress;
+        private System.Windows.Forms.Label lblVideoTime;
         private System.Windows.Forms.Panel panelViewControls;
         private System.Windows.Forms.GroupBox grpViewMode;
         private System.Windows.Forms.RadioButton rbZoom;
@@ -54,6 +59,11 @@ namespace YXBPictureViewer
             tvFileExplorer = new System.Windows.Forms.TreeView();
             panelImageView = new System.Windows.Forms.Panel();
             pictureBox = new System.Windows.Forms.PictureBox();
+            mediaPlayer = new LibVLCSharp.WinForms.VideoView();
+            panelVideoControls = new System.Windows.Forms.Panel();
+            btnPlayPause = new System.Windows.Forms.Button();
+            trackVideoProgress = new System.Windows.Forms.TrackBar();
+            lblVideoTime = new System.Windows.Forms.Label();
             panelViewControls = new System.Windows.Forms.Panel();
             grpViewMode = new System.Windows.Forms.GroupBox();
             rbCenterImage = new System.Windows.Forms.RadioButton();
@@ -91,6 +101,9 @@ namespace YXBPictureViewer
             splitContainer.SuspendLayout();
             panelImageView.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)mediaPlayer).BeginInit();
+            panelVideoControls.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)trackVideoProgress).BeginInit();
             panelViewControls.SuspendLayout();
             grpViewMode.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackZoom).BeginInit();
@@ -137,6 +150,8 @@ namespace YXBPictureViewer
             panelImageView.AutoScrollMargin = new System.Drawing.Size(0, 0);
             panelImageView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             panelImageView.Controls.Add(pictureBox);
+            panelImageView.Controls.Add(mediaPlayer);
+            panelImageView.Controls.Add(panelVideoControls);
             panelImageView.Dock = System.Windows.Forms.DockStyle.Fill;
             panelImageView.Location = new System.Drawing.Point(5, 65);
             panelImageView.Name = "panelImageView";
@@ -152,6 +167,62 @@ namespace YXBPictureViewer
             pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             pictureBox.TabIndex = 0;
             pictureBox.TabStop = false;
+            //
+            // mediaPlayer
+            //
+            mediaPlayer.Dock = System.Windows.Forms.DockStyle.Fill;
+            mediaPlayer.Location = new System.Drawing.Point(0, 0);
+            mediaPlayer.Name = "mediaPlayer";
+            mediaPlayer.Size = new System.Drawing.Size(829, 448);
+            mediaPlayer.TabIndex = 1;
+            mediaPlayer.Visible = false;
+            mediaPlayer.BackColor = System.Drawing.Color.Black;
+            //
+            // panelVideoControls
+            //
+            panelVideoControls.Controls.Add(btnPlayPause);
+            panelVideoControls.Controls.Add(trackVideoProgress);
+            panelVideoControls.Controls.Add(lblVideoTime);
+            panelVideoControls.Dock = System.Windows.Forms.DockStyle.Bottom;
+            panelVideoControls.Location = new System.Drawing.Point(0, 408);
+            panelVideoControls.Name = "panelVideoControls";
+            panelVideoControls.Size = new System.Drawing.Size(829, 40);
+            panelVideoControls.TabIndex = 2;
+            panelVideoControls.Visible = false;
+            //
+            // btnPlayPause
+            //
+            btnPlayPause.Location = new System.Drawing.Point(5, 5);
+            btnPlayPause.Name = "btnPlayPause";
+            btnPlayPause.Size = new System.Drawing.Size(75, 30);
+            btnPlayPause.TabIndex = 0;
+            btnPlayPause.Text = "Play";
+            btnPlayPause.UseVisualStyleBackColor = true;
+            btnPlayPause.Click += btnPlayPause_Click;
+            //
+            // trackVideoProgress
+            //
+            trackVideoProgress.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            trackVideoProgress.LargeChange = 10;
+            trackVideoProgress.Location = new System.Drawing.Point(85, 0);
+            trackVideoProgress.Maximum = 1000;
+            trackVideoProgress.Name = "trackVideoProgress";
+            trackVideoProgress.Size = new System.Drawing.Size(650, 40);
+            trackVideoProgress.TabIndex = 1;
+            trackVideoProgress.TickStyle = System.Windows.Forms.TickStyle.None;
+            trackVideoProgress.MouseDown += trackVideoProgress_MouseDown;
+            trackVideoProgress.MouseUp += trackVideoProgress_MouseUp;
+            trackVideoProgress.Scroll += trackVideoProgress_Scroll;
+            //
+            // lblVideoTime
+            //
+            lblVideoTime.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            lblVideoTime.AutoSize = true;
+            lblVideoTime.Location = new System.Drawing.Point(745, 12);
+            lblVideoTime.Name = "lblVideoTime";
+            lblVideoTime.Size = new System.Drawing.Size(70, 15);
+            lblVideoTime.TabIndex = 2;
+            lblVideoTime.Text = "00:00 / 00:00";
             //
             // panelViewControls
             //
@@ -498,6 +569,10 @@ namespace YXBPictureViewer
             splitContainer.ResumeLayout(false);
             panelImageView.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)mediaPlayer).EndInit();
+            panelVideoControls.ResumeLayout(false);
+            panelVideoControls.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)trackVideoProgress).EndInit();
             panelViewControls.ResumeLayout(false);
             panelViewControls.PerformLayout();
             grpViewMode.ResumeLayout(false);
