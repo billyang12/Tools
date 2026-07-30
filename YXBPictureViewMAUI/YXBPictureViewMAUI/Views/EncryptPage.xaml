@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="YXBPictureViewMAUI.Views.EncryptPage"
+             Title="Encrypt Images">
+
+    <AbsoluteLayout>
+        <ScrollView Padding="20"
+                    AbsoluteLayout.LayoutBounds="0,0,1,1"
+                    AbsoluteLayout.LayoutFlags="All">
+            <VerticalStackLayout Spacing="15">
+
+                <!-- Password Section -->
+                <Frame BorderColor="Gray" Padding="15">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="XPG Password" FontAttributes="Bold" FontSize="16"/>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Entry x:Name="txtPassword"
+                                   Grid.Column="0"
+                                   Placeholder="Enter password or key"
+                                   IsPassword="True"
+                                   TextChanged="OnPasswordChanged"/>
+                            <Button x:Name="btnCopyKey"
+                                    Grid.Column="1"
+                                    Text="📋"
+                                    Clicked="OnCopyKey"
+                                    IsVisible="False"
+                                    WidthRequest="40"
+                                    Margin="5,0,0,0"
+                                    ToolTipProperties.Text="Copy key to clipboard"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <Button Grid.Column="0"
+                                    Text="Generate"
+                                    Clicked="OnGenerateKey"/>
+                            <Button Grid.Column="1"
+                                    Text="From Password"
+                                    Clicked="OnDeriveKey"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Frame>
+
+            <!-- Source Folder Section -->
+            <Frame BorderColor="Gray" Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Source Folder" FontAttributes="Bold" FontSize="16"/>
+                    <Label x:Name="lblSourceFolder"
+                           Text="No folder selected"
+                           TextColor="Gray"/>
+                    <Button x:Name="btnSelectSource"
+                            Text="Select Folder"
+                            Clicked="OnSelectSourceFolder"
+                            BackgroundColor="{StaticResource Primary}"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Options Section -->
+            <Frame BorderColor="Gray" Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Options" FontAttributes="Bold" FontSize="16"/>
+
+                    <Label Text="Source File Type:"/>
+                    <Picker x:Name="pickerSourceExt">
+                        <Picker.Items>
+                            <x:String>jpg</x:String>
+                            <x:String>jpeg</x:String>
+                            <x:String>png</x:String>
+                            <x:String>gif</x:String>
+                            <x:String>bmp</x:String>
+                            <x:String>mp4</x:String>
+                            <x:String>avi</x:String>
+                            <x:String>mov</x:String>
+                            <x:String>wmv</x:String>
+                            <x:String>mkv</x:String>
+                        </Picker.Items>
+                    </Picker>
+
+                    <CheckBox x:Name="chkIncludeSubfolders"/>
+                    <Label Text="Include subfolders"
+                           VerticalOptions="Center"/>
+
+                    <CheckBox x:Name="chkDeleteOriginal"/>
+                    <Label Text="Delete original files (use with caution!)"
+                           TextColor="Red"
+                           VerticalOptions="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Encrypt Button -->
+            <Button x:Name="btnEncrypt"
+                    Text="Start Encryption"
+                    Clicked="OnEncrypt"
+                    BackgroundColor="{StaticResource Secondary}"
+                    HeightRequest="60"
+                    FontSize="18"
+                    FontAttributes="Bold"/>
+
+            <!-- Progress Section -->
+            <Frame BorderColor="Gray" Padding="15" IsVisible="False" x:Name="frameProgress">
+                <VerticalStackLayout Spacing="10">
+                    <Label x:Name="lblProgress" Text="Processing..." FontAttributes="Bold"/>
+                    <ProgressBar x:Name="progressBar" Progress="0"/>
+                    <Label x:Name="lblProgressDetail" Text="0 / 0" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Dialog overlay container (always on top) -->
+        <ContentView x:Name="dialogOverlay"
+                     IsVisible="False"
+                     AbsoluteLayout.LayoutBounds="0,0,1,1"
+                     AbsoluteLayout.LayoutFlags="All"/>
+    </AbsoluteLayout>
+</ContentPage>

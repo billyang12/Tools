@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="YXBPictureViewMAUI.Views.ViewImagesPage"
+             Title="View Media">
+
+    <AbsoluteLayout>
+        <Grid x:Name="mainGrid"
+              RowDefinitions="Auto,*"
+              ColumnDefinitions="*,35,250"
+              Padding="10"
+              AbsoluteLayout.LayoutBounds="0,0,1,1"
+              AbsoluteLayout.LayoutFlags="All">
+
+        <!-- Collapsible Password Entry -->
+        <Frame Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" BorderColor="Gray" Padding="10" Margin="0,0,0,10">
+            <VerticalStackLayout Spacing="5">
+                <!-- Header with Toggle -->
+                <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,5">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnToggleSettingsPanel"/>
+                    </Grid.GestureRecognizers>
+                    <Label x:Name="toggleIcon" Grid.Column="0" Text="▼" FontSize="14" VerticalOptions="Center" Margin="0,0,10,0"/>
+                    <Label Grid.Column="1" Text="Settings" FontAttributes="Bold" VerticalOptions="Center"/>
+                </Grid>
+
+                <!-- Collapsible Content -->
+                <VerticalStackLayout x:Name="settingsContent" Spacing="10" IsVisible="True">
+                    <Label Text="XPG Password" FontAttributes="Bold"/>
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                        <Entry x:Name="txtPassword"
+                               Grid.Column="0"
+                               Placeholder="Enter password or key"
+                               IsPassword="True"
+                               TextChanged="OnPasswordChanged"/>
+                        <Button x:Name="btnCopyKey"
+                                Grid.Column="1"
+                                Text="📋"
+                                Clicked="OnCopyKey"
+                                IsVisible="False"
+                                WidthRequest="40"
+                                Margin="5,0,0,0"
+                                ToolTipProperties.Text="Copy key to clipboard"/>
+                        <Button Grid.Column="2"
+                                Text="Generate"
+                                Clicked="OnGenerateKey"
+                                Margin="5,0,0,0"/>
+                        <Button Grid.Column="3"
+                                Text="From Password"
+                                Clicked="OnDeriveKey"
+                                Margin="5,0,0,0"/>
+                    </Grid>
+                    <Button x:Name="btnSelectFolder"
+                            Text="Select Folder"
+                            Clicked="OnSelectFolder"
+                            BackgroundColor="{StaticResource Primary}"/>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Image Display Area -->
+        <Grid Grid.Row="1" Grid.Column="0" RowDefinitions="Auto,*">
+
+            <!-- Image Info Bar -->
+            <Grid Grid.Row="0" ColumnDefinitions="60,*,60" Margin="0,0,0,10">
+                <Button Grid.Column="0" Text="◀" Clicked="OnPreviousImage"/>
+                <Label Grid.Column="1" x:Name="lblImageInfo"
+                       Text="Select a folder to begin"
+                       VerticalOptions="Center"
+                       HorizontalTextAlignment="Center"
+                       LineBreakMode="MiddleTruncation"/>
+                <Button Grid.Column="2" Text="▶" Clicked="OnNextImage"/>
+            </Grid>
+
+            <!-- Image/Video Viewer with Zoom/Pan -->
+            <ScrollView Grid.Row="1" x:Name="scrollView">
+                <Grid>
+                    <Image x:Name="imgDisplay"
+                           Aspect="AspectFit"
+                           BackgroundColor="Black"
+                           IsVisible="True"/>
+                    <toolkit:MediaElement x:Name="mediaPlayer"
+                                        IsVisible="False"
+                                        ShouldAutoPlay="True"
+                                        ShouldShowPlaybackControls="True"
+                                        ShouldLoopPlayback="False"
+                                        Aspect="AspectFit"
+                                        BackgroundColor="Black"
+                                        HeightRequest="400"
+                                        VerticalOptions="FillAndExpand"
+                                        HorizontalOptions="FillAndExpand"/>
+                    <ActivityIndicator x:Name="loadingIndicator"
+                                     IsRunning="False"
+                                     Color="White"
+                                     VerticalOptions="Center"
+                                     HorizontalOptions="Center"/>
+                </Grid>
+            </ScrollView>
+        </Grid>
+
+        <!-- Toggle Button (always visible) -->
+        <Border Grid.Row="1" Grid.Column="1"
+                BackgroundColor="{StaticResource Primary}"
+                StrokeThickness="0"
+                Padding="5,20,5,20"
+                Margin="5,0,0,0"
+                VerticalOptions="Center">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="5,0,0,5"/>
+            </Border.StrokeShape>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnToggleFileList"/>
+            </Border.GestureRecognizers>
+            <Label x:Name="fileListToggleIcon"
+                   Text="▶"
+                   TextColor="White"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"/>
+        </Border>
+
+        <!-- File List Panel -->
+        <Frame Grid.Row="1" Grid.Column="2"
+               x:Name="fileListPanel"
+               BorderColor="Gray"
+               Padding="5"
+               Margin="0"
+               IsVisible="True">
+            <Grid RowDefinitions="Auto,*">
+                <Label Grid.Row="0" Text="Files" FontAttributes="Bold" Margin="5"/>
+                <CollectionView Grid.Row="1" x:Name="fileListView"
+                                SelectionMode="Single"
+                                SelectionChanged="OnFileSelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Padding="5" BackgroundColor="Transparent">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnFileItemTapped" />
+                                </Grid.GestureRecognizers>
+                                <Label Text="{Binding DisplayName}"
+                                       LineBreakMode="TailTruncation"
+                                       FontSize="12"
+                                       TextColor="{Binding TextColor}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+        </Frame>
+        </Grid>
+
+        <!-- Dialog overlay container (always on top) -->
+        <ContentView x:Name="dialogOverlay"
+                     IsVisible="False"
+                     AbsoluteLayout.LayoutBounds="0,0,1,1"
+                     AbsoluteLayout.LayoutFlags="All"/>
+    </AbsoluteLayout>
+</ContentPage>

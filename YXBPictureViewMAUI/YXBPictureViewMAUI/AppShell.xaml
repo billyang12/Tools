@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="YXBPictureViewMAUI.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:YXBPictureViewMAUI.Views"
+    Shell.FlyoutBehavior="Flyout"
+    Title="XPG Picture Viewer">
+
+    <Shell.FlyoutHeader>
+        <Grid Padding="20" BackgroundColor="#2C3E50">
+            <Label Text="🔒 XPG Viewer"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   TextColor="White"
+                   VerticalOptions="Center"/>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <FlyoutItem Title="View Images" Icon="dotnet_bot.png">
+        <ShellContent
+            ContentTemplate="{DataTemplate local:ViewImagesPage}"
+            Route="ViewImagesPage" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Encrypt" Icon="dotnet_bot.png">
+        <ShellContent
+            ContentTemplate="{DataTemplate local:EncryptPage}"
+            Route="EncryptPage" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Decrypt" Icon="dotnet_bot.png">
+        <ShellContent
+            ContentTemplate="{DataTemplate local:DecryptPage}"
+            Route="DecryptPage" />
+    </FlyoutItem>
+
+    <MenuItem Text="Exit" Clicked="OnExitClicked" />
+
+</Shell>
