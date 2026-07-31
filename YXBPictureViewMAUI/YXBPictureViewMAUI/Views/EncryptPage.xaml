@@ -90,7 +90,8 @@
             <Button x:Name="btnEncrypt"
                     Text="Start Encryption"
                     Clicked="OnEncrypt"
-                    BackgroundColor="{StaticResource Secondary}"
+                    BackgroundColor="#2196F3"
+                    TextColor="White"
                     HeightRequest="60"
                     FontSize="18"
                     FontAttributes="Bold"/>

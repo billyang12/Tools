@@ -83,7 +83,8 @@
             <Button x:Name="btnDecrypt"
                     Text="Start Decryption"
                     Clicked="OnDecrypt"
-                    BackgroundColor="{StaticResource Secondary}"
+                    BackgroundColor="#4CAF50"
+                    TextColor="White"
                     HeightRequest="60"
                     FontSize="18"
                     FontAttributes="Bold"/>

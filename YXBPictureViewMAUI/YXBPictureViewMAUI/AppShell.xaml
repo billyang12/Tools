@@ -35,6 +35,12 @@
             Route="DecryptPage" />
     </FlyoutItem>
 
+    <FlyoutItem Title="About" Icon="dotnet_bot.png">
+        <ShellContent
+            ContentTemplate="{DataTemplate local:AboutPage}"
+            Route="AboutPage" />
+    </FlyoutItem>
+
     <MenuItem Text="Exit" Clicked="OnExitClicked" />
 
 </Shell>

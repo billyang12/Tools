@@ -150,6 +150,18 @@ public static class FileSystemHelper
         return Path.GetExtension(path);
     }
 
+    public static string GetFileNameWithoutExtension(string path)
+    {
+#if ANDROID
+        if (path.StartsWith("content://"))
+        {
+            var fileName = GetFileName(path);
+            return Path.GetFileNameWithoutExtension(fileName);
+        }
+#endif
+        return Path.GetFileNameWithoutExtension(path);
+    }
+
     public static async Task<byte[]?> ReadAllBytesAsync(string path)
     {
 #if ANDROID

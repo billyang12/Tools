@@ -141,10 +141,10 @@ public partial class DecryptPage : ContentPage
             btnDecrypt.IsEnabled = false;
             frameProgress.IsVisible = true;
 
-            // Find XPG and XPV files
+            // Find XPG and XPV files using FileSystemHelper (supports Android content:// URIs)
             SearchOption searchOption = includeSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-            var xpgFiles = Directory.GetFiles(sourceFolderPath, "*.xpg", searchOption);
-            var xpvFiles = Directory.GetFiles(sourceFolderPath, "*.xpv", searchOption);
+            var xpgFiles = FileSystemHelper.GetFiles(sourceFolderPath, "*.xpg", searchOption);
+            var xpvFiles = FileSystemHelper.GetFiles(sourceFolderPath, "*.xpv", searchOption);
             var files = xpgFiles.Concat(xpvFiles).ToList();
 
             if (files.Count == 0)
@@ -161,10 +161,26 @@ public partial class DecryptPage : ContentPage
             {
                 try
                 {
-                    string outputFile = Path.Combine(
-                        Path.GetDirectoryName(file) ?? string.Empty,
-                        Path.GetFileNameWithoutExtension(file) + $".{outputExt}"
-                    );
+                    // Generate output file path
+                    string fileName = FileSystemHelper.GetFileNameWithoutExtension(file);
+                    string outputFile;
+
+                    if (sourceFolderPath.StartsWith("content://"))
+                    {
+                        // For Android content URIs, output file goes to app's private storage
+                        string cacheDir = FileSystem.AppDataDirectory;
+                        string subfolder = Path.Combine(cacheDir, "decrypted");
+                        Directory.CreateDirectory(subfolder);
+                        outputFile = Path.Combine(subfolder, fileName + $".{outputExt}");
+                    }
+                    else
+                    {
+                        // For regular file paths
+                        outputFile = Path.Combine(
+                            Path.GetDirectoryName(file) ?? string.Empty,
+                            fileName + $".{outputExt}"
+                        );
+                    }
 
                     byte[]? decryptedData = await XPGEncryption.DecryptFileAsync(file, txtPassword.Text);
 
@@ -173,8 +189,9 @@ public partial class DecryptPage : ContentPage
                         await File.WriteAllBytesAsync(outputFile, decryptedData);
                         successful++;
 
-                        if (deleteOriginal)
+                        if (deleteOriginal && !file.StartsWith("content://"))
                         {
+                            // Only delete original if it's not a content:// URI
                             File.Delete(file);
                         }
                     }
@@ -189,9 +206,13 @@ public partial class DecryptPage : ContentPage
                 lblProgressDetail.Text = $"{processed} / {files.Count}";
             }
 
-            await DisplayAlert("Decryption Complete",
-                $"Successfully decrypted {successful} out of {files.Count} files.",
-                "OK");
+            string message = $"Successfully decrypted {successful} out of {files.Count} files.";
+            if (sourceFolderPath.StartsWith("content://"))
+            {
+                message += $"\n\nDecrypted files saved to:\n{Path.Combine(FileSystem.AppDataDirectory, "decrypted")}";
+            }
+
+            await DisplayAlert("Decryption Complete", message, "OK");
         }
         catch (Exception ex)
         {
@@ -199,7 +220,7 @@ public partial class DecryptPage : ContentPage
         }
         finally
         {
-            btnDecrypt.IsEnabled = false;
+            btnDecrypt.IsEnabled = true;
             frameProgress.IsVisible = false;
             progressBar.Progress = 0;
         }

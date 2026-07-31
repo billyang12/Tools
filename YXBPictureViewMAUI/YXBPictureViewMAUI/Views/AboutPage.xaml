@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="YXBPictureViewMAUI.Views.AboutPage"
+             Title="About">
+
+    <ScrollView Padding="20">
+        <VerticalStackLayout Spacing="20" VerticalOptions="Center">
+
+            <!-- App Icon -->
+            <Image Source="appicon.png"
+                   WidthRequest="120"
+                   HeightRequest="120"
+                   HorizontalOptions="Center"
+                   Margin="0,20,0,0"/>
+
+            <!-- App Name -->
+            <Label Text="XPG Picture Viewer"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   HorizontalTextAlignment="Center"/>
+
+            <!-- Version -->
+            <Label x:Name="lblVersion"
+                   Text="Version 1.0"
+                   FontSize="16"
+                   TextColor="Gray"
+                   HorizontalTextAlignment="Center"/>
+
+            <!-- Developer -->
+            <Label Text="Developed by Bill Yang"
+                   FontSize="18"
+                   HorizontalTextAlignment="Center"
+                   Margin="0,20,0,0"/>
+
+            <!-- Description -->
+            <Frame BorderColor="Gray"
+                   Padding="20"
+                   Margin="0,20,0,0">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="About XPG Picture Viewer"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"/>
+
+                    <Label TextColor="#333333">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="XPG Picture Viewer is a secure media viewer and encryption tool for Android. It allows you to:" FontSize="14"/>
+                                <Span Text="&#x0a;&#x0a;"/>
+                                <Span Text="• View encrypted images (.xpg) and videos (.xpv)" FontSize="14"/>
+                                <Span Text="&#x0a;"/>
+                                <Span Text="• View regular images and videos" FontSize="14"/>
+                                <Span Text="&#x0a;"/>
+                                <Span Text="• Encrypt media files with AES-256-GCM encryption" FontSize="14"/>
+                                <Span Text="&#x0a;"/>
+                                <Span Text="• Decrypt encrypted files back to original format" FontSize="14"/>
+                                <Span Text="&#x0a;"/>
+                                <Span Text="• Generate random encryption keys" FontSize="14"/>
+                                <Span Text="&#x0a;"/>
+                                <Span Text="• Derive keys from passwords using PBKDF2" FontSize="14"/>
+                                <Span Text="&#x0a;&#x0a;"/>
+                                <Span Text="Your encrypted files are protected with industry-standard encryption, ensuring your privacy and security." FontSize="14"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Copyright -->
+            <Label x:Name="lblCopyright"
+                   Text="© 2026 Bill Yang. All rights reserved."
+                   FontSize="12"
+                   TextColor="Gray"
+                   HorizontalTextAlignment="Center"
+                   Margin="0,20,0,20"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -142,9 +142,9 @@ public partial class EncryptPage : ContentPage
             btnEncrypt.IsEnabled = false;
             frameProgress.IsVisible = true;
 
-            // Find files
+            // Find files using FileSystemHelper (supports Android content:// URIs)
             SearchOption searchOption = includeSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-            var files = Directory.GetFiles(sourceFolderPath, $"*.{sourceExt}", searchOption).ToList();
+            var files = FileSystemHelper.GetFiles(sourceFolderPath, $"*.{sourceExt}", searchOption).ToList();
 
             if (files.Count == 0)
             {
@@ -164,10 +164,26 @@ public partial class EncryptPage : ContentPage
             {
                 try
                 {
-                    string outputFile = Path.Combine(
-                        Path.GetDirectoryName(file) ?? string.Empty,
-                        Path.GetFileNameWithoutExtension(file) + targetExtension
-                    );
+                    // Generate output file path
+                    string fileName = FileSystemHelper.GetFileNameWithoutExtension(file);
+                    string outputFile;
+
+                    if (sourceFolderPath.StartsWith("content://"))
+                    {
+                        // For Android content URIs, output file goes to app's private storage
+                        string cacheDir = FileSystem.AppDataDirectory;
+                        string subfolder = Path.Combine(cacheDir, "encrypted");
+                        Directory.CreateDirectory(subfolder);
+                        outputFile = Path.Combine(subfolder, fileName + targetExtension);
+                    }
+                    else
+                    {
+                        // For regular file paths
+                        outputFile = Path.Combine(
+                            Path.GetDirectoryName(file) ?? string.Empty,
+                            fileName + targetExtension
+                        );
+                    }
 
                     bool success = await XPGEncryption.EncryptFileAsync(file, outputFile, txtPassword.Text);
 
@@ -175,8 +191,9 @@ public partial class EncryptPage : ContentPage
                     {
                         successful++;
 
-                        if (deleteOriginal)
+                        if (deleteOriginal && !file.StartsWith("content://"))
                         {
+                            // Only delete original if it's not a content:// URI
                             File.Delete(file);
                         }
                     }
@@ -191,9 +208,13 @@ public partial class EncryptPage : ContentPage
                 lblProgressDetail.Text = $"{processed} / {files.Count}";
             }
 
-            await DisplayAlert("Encryption Complete",
-                $"Successfully encrypted {successful} out of {files.Count} files.",
-                "OK");
+            string message = $"Successfully encrypted {successful} out of {files.Count} files.";
+            if (sourceFolderPath.StartsWith("content://"))
+            {
+                message += $"\n\nEncrypted files saved to:\n{Path.Combine(FileSystem.AppDataDirectory, "encrypted")}";
+            }
+
+            await DisplayAlert("Encryption Complete", message, "OK");
         }
         catch (Exception ex)
         {

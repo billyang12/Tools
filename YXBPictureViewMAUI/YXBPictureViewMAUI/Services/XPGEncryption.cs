@@ -51,14 +51,27 @@ namespace YXBPictureViewMAUI.Services
         {
             try
             {
-                byte[] fileData = await File.ReadAllBytesAsync(inputPath);
+                System.Diagnostics.Debug.WriteLine($"EncryptFileAsync: Reading from {inputPath}");
+                byte[]? fileData = await FileSystemHelper.ReadAllBytesAsync(inputPath);
+                if (fileData == null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"EncryptFileAsync: Failed to read input file");
+                    return false;
+                }
+
+                System.Diagnostics.Debug.WriteLine($"EncryptFileAsync: Encrypting {fileData.Length} bytes");
                 byte[] encrypted = EncryptBuffer(fileData, key);
+
+                System.Diagnostics.Debug.WriteLine($"EncryptFileAsync: Writing {encrypted.Length} bytes to {outputPath}");
                 await File.WriteAllBytesAsync(outputPath, encrypted);
+
+                System.Diagnostics.Debug.WriteLine($"EncryptFileAsync: Success");
                 return true;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Encryption error: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
                 return false;
             }
         }
