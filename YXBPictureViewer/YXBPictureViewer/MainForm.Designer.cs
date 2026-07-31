@@ -12,6 +12,8 @@ namespace YXBPictureViewer
         private System.Windows.Forms.Button btnPlayPause;
         private System.Windows.Forms.TrackBar trackVideoProgress;
         private System.Windows.Forms.Label lblVideoTime;
+        private System.Windows.Forms.TrackBar trackVolume;
+        private System.Windows.Forms.Label lblVolume;
         private System.Windows.Forms.Panel panelViewControls;
         private System.Windows.Forms.GroupBox grpViewMode;
         private System.Windows.Forms.RadioButton rbZoom;
@@ -36,6 +38,9 @@ namespace YXBPictureViewer
         private System.Windows.Forms.Button btnCopyYpgPassword;
         private System.Windows.Forms.Button btnCopyXpgPassword;
         private System.Windows.Forms.Button btnTogglePanel;
+        private System.Windows.Forms.MenuStrip menuStrip;
+        private System.Windows.Forms.ToolStripMenuItem menuHelp;
+        private System.Windows.Forms.ToolStripMenuItem menuAbout;
         private System.Windows.Forms.Panel bottomPanel;
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel lblStatus;
@@ -64,6 +69,8 @@ namespace YXBPictureViewer
             btnPlayPause = new System.Windows.Forms.Button();
             trackVideoProgress = new System.Windows.Forms.TrackBar();
             lblVideoTime = new System.Windows.Forms.Label();
+            trackVolume = new System.Windows.Forms.TrackBar();
+            lblVolume = new System.Windows.Forms.Label();
             panelViewControls = new System.Windows.Forms.Panel();
             grpViewMode = new System.Windows.Forms.GroupBox();
             rbCenterImage = new System.Windows.Forms.RadioButton();
@@ -75,6 +82,9 @@ namespace YXBPictureViewer
             trackZoom = new System.Windows.Forms.TrackBar();
             topPanel = new System.Windows.Forms.Panel();
             btnTogglePanel = new System.Windows.Forms.Button();
+            menuStrip = new System.Windows.Forms.MenuStrip();
+            menuHelp = new System.Windows.Forms.ToolStripMenuItem();
+            menuAbout = new System.Windows.Forms.ToolStripMenuItem();
             grpOperations = new System.Windows.Forms.GroupBox();
             btnDecryptToJpg = new System.Windows.Forms.Button();
             btnConvertYpgToXpg = new System.Windows.Forms.Button();
@@ -180,7 +190,77 @@ namespace YXBPictureViewer
             //
             // panelVideoControls
             //
+            panelVideoControls.BackColor = System.Drawing.Color.FromArgb(64, 64, 64);
+            panelVideoControls.Controls.Add(lblVideoTime);
+            panelVideoControls.Controls.Add(trackVideoProgress);
+            panelVideoControls.Controls.Add(lblVolume);
+            panelVideoControls.Controls.Add(trackVolume);
             panelVideoControls.Controls.Add(btnPlayPause);
+            panelVideoControls.Dock = System.Windows.Forms.DockStyle.Bottom;
+            panelVideoControls.Location = new System.Drawing.Point(0, 398);
+            panelVideoControls.Name = "panelVideoControls";
+            panelVideoControls.Size = new System.Drawing.Size(829, 50);
+            panelVideoControls.TabIndex = 2;
+            panelVideoControls.Visible = false;
+            //
+            // btnPlayPause
+            //
+            btnPlayPause.BackColor = System.Drawing.Color.White;
+            btnPlayPause.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            btnPlayPause.Location = new System.Drawing.Point(10, 10);
+            btnPlayPause.Name = "btnPlayPause";
+            btnPlayPause.Size = new System.Drawing.Size(80, 30);
+            btnPlayPause.TabIndex = 0;
+            btnPlayPause.Text = "▶ Play";
+            btnPlayPause.UseVisualStyleBackColor = false;
+            btnPlayPause.Click += btnPlayPause_Click;
+            //
+            // trackVideoProgress
+            //
+            trackVideoProgress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            trackVideoProgress.Location = new System.Drawing.Point(100, 15);
+            trackVideoProgress.Maximum = 1000;
+            trackVideoProgress.Name = "trackVideoProgress";
+            trackVideoProgress.Size = new System.Drawing.Size(500, 45);
+            trackVideoProgress.TabIndex = 1;
+            trackVideoProgress.TickStyle = System.Windows.Forms.TickStyle.None;
+            trackVideoProgress.Scroll += trackVideoProgress_Scroll;
+            trackVideoProgress.MouseDown += trackVideoProgress_MouseDown;
+            trackVideoProgress.MouseUp += trackVideoProgress_MouseUp;
+            //
+            // lblVideoTime
+            //
+            lblVideoTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            lblVideoTime.ForeColor = System.Drawing.Color.White;
+            lblVideoTime.Location = new System.Drawing.Point(610, 15);
+            lblVideoTime.Name = "lblVideoTime";
+            lblVideoTime.Size = new System.Drawing.Size(100, 20);
+            lblVideoTime.TabIndex = 2;
+            lblVideoTime.Text = "00:00 / 00:00";
+            lblVideoTime.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            //
+            // trackVolume
+            //
+            trackVolume.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            trackVolume.Location = new System.Drawing.Point(740, 15);
+            trackVolume.Maximum = 100;
+            trackVolume.Name = "trackVolume";
+            trackVolume.Size = new System.Drawing.Size(60, 45);
+            trackVolume.TabIndex = 3;
+            trackVolume.TickStyle = System.Windows.Forms.TickStyle.None;
+            trackVolume.Value = 50;
+            trackVolume.Scroll += trackVolume_Scroll;
+            //
+            // lblVolume
+            //
+            lblVolume.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            lblVolume.ForeColor = System.Drawing.Color.White;
+            lblVolume.Location = new System.Drawing.Point(715, 15);
+            lblVolume.Name = "lblVolume";
+            lblVolume.Size = new System.Drawing.Size(25, 20);
+            lblVolume.TabIndex = 4;
+            lblVolume.Text = "🔊";
+            lblVolume.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             panelVideoControls.Controls.Add(trackVideoProgress);
             panelVideoControls.Controls.Add(lblVideoTime);
             panelVideoControls.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -552,17 +632,43 @@ namespace YXBPictureViewer
             lblStatus.Size = new System.Drawing.Size(39, 17);
             lblStatus.Text = "Ready";
             // 
+            //
+            // menuStrip
+            //
+            menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { menuHelp });
+            menuStrip.Location = new System.Drawing.Point(0, 0);
+            menuStrip.Name = "menuStrip";
+            menuStrip.Size = new System.Drawing.Size(1200, 24);
+            menuStrip.TabIndex = 0;
+            menuStrip.Text = "menuStrip";
+            //
+            // menuHelp
+            //
+            menuHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { menuAbout });
+            menuHelp.Name = "menuHelp";
+            menuHelp.Size = new System.Drawing.Size(44, 20);
+            menuHelp.Text = "&Help";
+            //
+            // menuAbout
+            //
+            menuAbout.Name = "menuAbout";
+            menuAbout.Size = new System.Drawing.Size(107, 22);
+            menuAbout.Text = "&About";
+            menuAbout.Click += menuAbout_Click;
             // MainForm
-            // 
+            //
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1200, 725);
             Controls.Add(splitContainer);
             Controls.Add(topPanel);
             Controls.Add(bottomPanel);
+            Controls.Add(menuStrip);
+            MainMenuStrip = menuStrip;
             Name = "MainForm";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             Text = "YXB Picture Viewer - Encrypted Image Manager";
+            Icon = new System.Drawing.Icon("appicon.ico");
             splitContainer.Panel1.ResumeLayout(false);
             splitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer).EndInit();
@@ -587,7 +693,10 @@ namespace YXBPictureViewer
             bottomPanel.PerformLayout();
             statusStrip.ResumeLayout(false);
             statusStrip.PerformLayout();
+            menuStrip.ResumeLayout(false);
+            menuStrip.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
     }
 }

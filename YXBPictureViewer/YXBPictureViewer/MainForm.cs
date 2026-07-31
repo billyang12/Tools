@@ -23,6 +23,7 @@ namespace YXBPictureViewer
         private MediaPlayer vlcMediaPlayer;
         private System.Windows.Forms.Timer videoProgressTimer;
         private bool isDraggingVideoProgress = false;
+        private bool isLoadingFirstFrame = false;
 
         public MainForm()
         {
@@ -53,13 +54,16 @@ namespace YXBPictureViewer
             try
             {
                 Core.Initialize();
-                libVLC = new LibVLC();
+                libVLC = new LibVLC("--no-video-title-show");
                 vlcMediaPlayer = new MediaPlayer(libVLC)
                 {
                     Mute = false,
-                    Volume = 100
+                    Volume = 50
                 };
                 mediaPlayer.MediaPlayer = vlcMediaPlayer;
+
+                // Set volume slider to match initial volume
+                trackVolume.Value = 50;
 
                 // Handle media ended event for cleanup
                 vlcMediaPlayer.EndReached += VlcMediaPlayer_EndReached;
@@ -95,7 +99,26 @@ namespace YXBPictureViewer
         {
             if (IsHandleCreated)
             {
-                BeginInvoke(new Action(() => btnPlayPause.Text = "Pause"));
+                BeginInvoke(new Action(() =>
+                {
+                    btnPlayPause.Text = "Pause";
+
+                    // If we're loading the first frame, pause immediately to show it
+                    if (isLoadingFirstFrame)
+                    {
+                        isLoadingFirstFrame = false;
+                        // Add a small delay to ensure the first frame is rendered
+                        System.Threading.Timer pauseTimer = null;
+                        pauseTimer = new System.Threading.Timer(_ =>
+                        {
+                            if (vlcMediaPlayer != null && vlcMediaPlayer.IsPlaying)
+                            {
+                                vlcMediaPlayer.Pause();
+                            }
+                            pauseTimer?.Dispose();
+                        }, null, 50, System.Threading.Timeout.Infinite);
+                    }
+                }));
             }
         }
 
@@ -183,6 +206,17 @@ namespace YXBPictureViewer
 
             float position = (float)trackVideoProgress.Value / trackVideoProgress.Maximum;
             vlcMediaPlayer.Position = position;
+        }
+
+        /// <summary>
+        /// Volume control scroll
+        /// </summary>
+        private void trackVolume_Scroll(object sender, EventArgs e)
+        {
+            if (vlcMediaPlayer != null)
+            {
+                vlcMediaPlayer.Volume = trackVolume.Value;
+            }
         }
 
         /// <summary>
@@ -1130,11 +1164,11 @@ namespace YXBPictureViewer
                 CleanupTempVideoFile();
                 currentTempVideoFile = tempVideoFile;
 
-                // Load video with LibVLC, but start paused so playback only begins
-                // when the user clicks the Play button
+                // Load and play video to show first frame, then auto-pause
+                // This allows the user to see the video content before playing
+                isLoadingFirstFrame = true;
                 using (var media = new Media(libVLC, tempVideoFile))
                 {
-                    media.AddOption(":start-paused");
                     vlcMediaPlayer.Play(media);
                 }
             }
@@ -1171,6 +1205,17 @@ namespace YXBPictureViewer
                 }
             }
             currentTempVideoFile = null;
+        }
+
+        /// <summary>
+        /// About menu click - show About dialog
+        /// </summary>
+        private void menuAbout_Click(object sender, EventArgs e)
+        {
+            using (AboutDialog aboutDialog = new AboutDialog())
+            {
+                aboutDialog.ShowDialog(this);
+            }
         }
 
         /// <summary>

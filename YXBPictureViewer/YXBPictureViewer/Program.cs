@@ -14,8 +14,6 @@ namespace YXBPictureViewer
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            // Launch new MainForm instead of old Form1
-            // Form1 is kept intact for reference/backup
             Application.Run(new MainForm());
         }
     }
