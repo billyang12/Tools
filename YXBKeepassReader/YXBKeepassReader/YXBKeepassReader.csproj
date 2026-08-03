@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationVisualStyles>true</ApplicationVisualStyles>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="KeePassLib.Standard" Version="2.57.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ENHANCEMENTS_AT_A_GLANCE.txt" />
+    <Content Include="IMPLEMENTATION_COMPLETE.txt" />
+    <Content Include="UX_ENHANCEMENTS_VISUAL.txt" />
+    <Content Include="app.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="AboutDialog.cs" />
+    <Compile Update="DetailedErrorDialog.cs" />
+    <Compile Update="MainForm.cs" />
+    <Compile Update="HelpDialog.cs" />
+    <Compile Update="PasswordDialog.cs" />
+  </ItemGroup>
+</Project>

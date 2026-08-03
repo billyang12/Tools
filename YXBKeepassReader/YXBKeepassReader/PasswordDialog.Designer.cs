@@ -1,0 +1,102 @@
+namespace YXBKeepassReader
+{
+    partial class PasswordDialog
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            lblFileName = new System.Windows.Forms.Label();
+            txtPassword = new System.Windows.Forms.TextBox();
+            btnOK = new System.Windows.Forms.Button();
+            btnCancel = new System.Windows.Forms.Button();
+            SuspendLayout();
+            //
+            // lblFileName
+            //
+            lblFileName.Location = new System.Drawing.Point(15, 15);
+            lblFileName.Name = "lblFileName";
+            lblFileName.Size = new System.Drawing.Size(370, 40);
+            lblFileName.TabIndex = 0;
+            lblFileName.Text = "Enter password for:";
+            //
+            // txtPassword
+            //
+            txtPassword.Location = new System.Drawing.Point(15, 65);
+            txtPassword.Name = "txtPassword";
+            txtPassword.PasswordChar = '*';
+            txtPassword.Size = new System.Drawing.Size(370, 23);
+            txtPassword.TabIndex = 1;
+            //
+            // btnOK
+            //
+            btnOK.Location = new System.Drawing.Point(210, 105);
+            btnOK.Name = "btnOK";
+            btnOK.Size = new System.Drawing.Size(85, 30);
+            btnOK.TabIndex = 2;
+            btnOK.Text = "OK";
+            btnOK.UseVisualStyleBackColor = true;
+            btnOK.Click += btnOK_Click;
+            //
+            // btnCancel
+            //
+            btnCancel.Location = new System.Drawing.Point(300, 105);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new System.Drawing.Size(85, 30);
+            btnCancel.TabIndex = 3;
+            btnCancel.Text = "Cancel";
+            btnCancel.UseVisualStyleBackColor = true;
+            btnCancel.Click += btnCancel_Click;
+            //
+            // PasswordDialog
+            //
+            AcceptButton = btnOK;
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            CancelButton = btnCancel;
+            ClientSize = new System.Drawing.Size(400, 150);
+            Controls.Add(btnCancel);
+            Controls.Add(btnOK);
+            Controls.Add(txtPassword);
+            Controls.Add(lblFileName);
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "PasswordDialog";
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            Text = "Enter Password";
+            Load += PasswordDialog_Load;
+            ResumeLayout(false);
+            PerformLayout();
+        }
+
+        #endregion
+
+        private System.Windows.Forms.Label lblFileName;
+        private System.Windows.Forms.TextBox txtPassword;
+        private System.Windows.Forms.Button btnOK;
+        private System.Windows.Forms.Button btnCancel;
+    }
+}
