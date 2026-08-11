@@ -1193,15 +1193,22 @@ namespace YXBPictureViewer
             {
                 try
                 {
-                    // Only delete if it's in temp folder (not an unencrypted video)
+                    // SECURITY: Only delete if it's in temp folder (not an unencrypted video)
                     if (currentTempVideoFile.StartsWith(Path.GetTempPath()))
                     {
-                        File.Delete(currentTempVideoFile);
+                        System.Diagnostics.Debug.WriteLine($"SECURITY: Securely erasing temp video file: {Path.GetFileName(currentTempVideoFile)}");
+
+                        // Use Quick method (1 pass) for fast cleanup
+                        if (!Services.SecureEraseHelper.SecureEraseFile(currentTempVideoFile, Services.EraseMethod.Quick))
+                        {
+                            System.Diagnostics.Debug.WriteLine("SECURITY WARNING: Secure erase failed, attempting regular delete");
+                            try { File.Delete(currentTempVideoFile); } catch { }
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Error deleting temp video file: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"SECURITY WARNING: Error securely erasing temp video file: {ex.Message}");
                 }
             }
             currentTempVideoFile = null;

@@ -253,13 +253,20 @@ namespace YXBPictureViewer
                     // Delete original if requested
                     if (deleteOriginal)
                     {
+                        // SECURITY: Securely erase original encrypted file after decryption
                         try
                         {
-                            File.Delete(file);
+                            System.Diagnostics.Debug.WriteLine($"SECURITY: Securely erasing encrypted file after decryption: {Path.GetFileName(file)}");
+
+                            if (!Services.SecureEraseHelper.SecureEraseFile(file, Services.EraseMethod.Quick))
+                            {
+                                System.Diagnostics.Debug.WriteLine($"SECURITY WARNING: Secure erase failed for {file}, using regular delete");
+                                File.Delete(file);
+                            }
                         }
                         catch (Exception ex)
                         {
-                            System.Diagnostics.Debug.WriteLine($"Could not delete {file}: {ex.Message}");
+                            System.Diagnostics.Debug.WriteLine($"Could not securely erase {file}: {ex.Message}");
                         }
                     }
                 }
