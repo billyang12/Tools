@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="YXBToolsMAUI.Views.EncryptionPage"
+             Title="File Encryption">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <Label Text="File/Folder Encryption"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <Frame BorderColor="Gray" Padding="15">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Select File or Folder to Encrypt"
+                           FontSize="16"
+                           FontAttributes="Bold"/>
+
+                    <Button x:Name="SelectFileBtn"
+                            Text="Select File"
+                            Clicked="OnSelectFileClicked"
+                            BackgroundColor="#2196F3"/>
+
+                    <Button x:Name="SelectFolderBtn"
+                            Text="Select Folder"
+                            Clicked="OnSelectFolderClicked"
+                            BackgroundColor="#4CAF50"/>
+
+                    <Label x:Name="SelectedPathLabel"
+                           Text="No file or folder selected"
+                           FontSize="12"
+                           TextColor="Gray"
+                           LineBreakMode="WordWrap"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame BorderColor="Gray" Padding="15">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Encryption Password"
+                           FontSize="16"
+                           FontAttributes="Bold"/>
+
+                    <Entry x:Name="PasswordEntry"
+                           Placeholder="Enter password"
+                           IsPassword="True"
+                           FontSize="14"/>
+
+                    <Entry x:Name="ConfirmPasswordEntry"
+                           Placeholder="Confirm password"
+                           IsPassword="True"
+                           FontSize="14"/>
+
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="ShowPasswordCheckBox"
+                                  CheckedChanged="OnShowPasswordChanged"/>
+                        <Label Text="Show password"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame BorderColor="Gray" Padding="15">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Output Location"
+                           FontSize="16"
+                           FontAttributes="Bold"/>
+
+                    <Button x:Name="SelectOutputBtn"
+                            Text="Select Output Folder"
+                            Clicked="OnSelectOutputClicked"
+                            BackgroundColor="#FF9800"/>
+
+                    <Label x:Name="OutputPathLabel"
+                           Text="No output folder selected"
+                           FontSize="11"
+                           TextColor="Gray"
+                           LineBreakMode="CharacterWrap"
+                           MaxLines="3"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Button x:Name="EncryptBtn"
+                    Text="Encrypt"
+                    Clicked="OnEncryptClicked"
+                    BackgroundColor="#9C27B0"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    HeightRequest="50"/>
+
+            <Frame BorderColor="LightGray"
+                   Padding="15"
+                   IsVisible="False"
+                   x:Name="ProgressFrame">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Encryption in Progress..."
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+
+                    <ProgressBar x:Name="ProgressBar"
+                                 Progress="0"
+                                 HeightRequest="20"/>
+
+                    <Label x:Name="ProgressLabel"
+                           Text="0 / 0 files"
+                           FontSize="14"
+                           HorizontalOptions="Center"/>
+
+                    <Label x:Name="CurrentFileLabel"
+                           Text=""
+                           FontSize="12"
+                           HorizontalOptions="Center"
+                           TextColor="Gray"
+                           LineBreakMode="MiddleTruncation"/>
+
+                    <Button x:Name="CancelBtn"
+                            Text="Cancel"
+                            Clicked="OnCancelClicked"
+                            BackgroundColor="#F44336"
+                            TextColor="White"
+                            HeightRequest="40"
+                            WidthRequest="150"
+                            HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Label x:Name="StatusLabel"
+                   Text=""
+                   FontSize="14"
+                   HorizontalOptions="Center"
+                   FontAttributes="Bold"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
