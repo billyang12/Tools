@@ -191,8 +191,17 @@ public partial class DecryptPage : ContentPage
 
                         if (deleteOriginal && !file.StartsWith("content://"))
                         {
-                            // Only delete original if it's not a content:// URI
-                            File.Delete(file);
+                            // SECURITY: Securely erase original encrypted file after decryption
+                            try
+                            {
+                                await Services.SecureEraseHelper.SecureEraseFileAsync(file, Services.EraseMethod.Quick);
+                                System.Diagnostics.Debug.WriteLine($"SECURITY: Securely erased encrypted file after decryption: {Path.GetFileName(file)}");
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"SECURITY WARNING: Failed to securely erase encrypted file, using regular delete: {deleteEx.Message}");
+                                File.Delete(file); // Fallback
+                            }
                         }
                     }
                 }

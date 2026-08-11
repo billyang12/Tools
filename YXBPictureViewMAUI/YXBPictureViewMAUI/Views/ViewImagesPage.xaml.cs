@@ -395,69 +395,30 @@ public partial class ViewImagesPage : ContentPage
         }
     }
 
-    private void CleanupTempVideoFile()
+    private async void CleanupTempVideoFile()
     {
         if (!string.IsNullOrEmpty(currentTempVideoFile) && File.Exists(currentTempVideoFile))
         {
             try
             {
-                // Securely delete: overwrite with random data before deletion
-                SecureDeleteFile(currentTempVideoFile);
+                // SECURITY: Securely erase decrypted temp video file
+                System.Diagnostics.Debug.WriteLine($"SECURITY: Securely erasing temp video file: {Path.GetFileName(currentTempVideoFile)}");
+
+                // Use Quick method (1 pass) for fast cleanup
+                await Services.SecureEraseHelper.SecureEraseFileAsync(currentTempVideoFile, Services.EraseMethod.Quick);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error deleting temp video file: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"SECURITY WARNING: Error securely erasing temp video file: {ex.Message}");
+                // Fallback to regular delete if secure erase fails
+                try
+                {
+                    File.Delete(currentTempVideoFile);
+                }
+                catch { }
             }
         }
         currentTempVideoFile = null;
-    }
-
-    private void SecureDeleteFile(string filePath)
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
-                return;
-
-            // For very large files, just delete directly (overwriting can cause issues)
-            var fileInfo = new FileInfo(filePath);
-            long fileSize = fileInfo.Length;
-
-            // Only do secure overwrite for files < 100MB
-            if (fileSize < 100 * 1024 * 1024)
-            {
-                // Overwrite with random data (makes recovery harder)
-                using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Write))
-                {
-                    byte[] randomData = new byte[Math.Min(fileSize, 1024 * 1024)]; // 1MB chunks
-                    var random = new Random();
-
-                    for (long written = 0; written < fileSize; written += randomData.Length)
-                    {
-                        int bytesToWrite = (int)Math.Min(randomData.Length, fileSize - written);
-                        random.NextBytes(randomData);
-                        fileStream.Write(randomData, 0, bytesToWrite);
-                    }
-                    fileStream.Flush();
-                }
-            }
-
-            // Delete the file
-            File.Delete(filePath);
-            System.Diagnostics.Debug.WriteLine($"Securely deleted temp file: {filePath}");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Secure delete failed, attempting regular delete: {ex.Message}");
-            try
-            {
-                if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
-                {
-                    File.Delete(filePath);
-                }
-            }
-            catch { }
-        }
     }
 
     private void UpdateFileListSelection()
@@ -554,8 +515,8 @@ public partial class ViewImagesPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        // Clean up any leftover temp files from previous sessions (run in background)
-        Task.Run(() => CleanupAllTempVideoFiles());
+        // SECURITY: Clean up any leftover temp files from previous sessions (run in background)
+        _ = Task.Run(async () => await CleanupAllTempVideoFilesAsync());
     }
 
     protected override void OnDisappearing()
@@ -565,31 +526,39 @@ public partial class ViewImagesPage : ContentPage
         CleanupTempVideoFile();
     }
 
-    private void CleanupAllTempVideoFiles()
+    private async Task CleanupAllTempVideoFilesAsync()
     {
         try
         {
-            // Clean up all .mp4 files in cache directory (our temp videos)
+            // SECURITY: Clean up all .mp4 files in cache directory (our temp decrypted videos)
             var cacheDir = FileSystem.CacheDirectory;
             var tempFiles = Directory.GetFiles(cacheDir, "*.mp4");
 
-            foreach (var file in tempFiles)
+            if (tempFiles.Length > 0)
             {
-                try
-                {
-                    SecureDeleteFile(file);
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Failed to clean up temp file {file}: {ex.Message}");
-                }
-            }
+                System.Diagnostics.Debug.WriteLine($"SECURITY: Found {tempFiles.Length} temp video files to securely erase");
 
-            System.Diagnostics.Debug.WriteLine($"Cleaned up {tempFiles.Length} temp video files");
+                foreach (var file in tempFiles)
+                {
+                    try
+                    {
+                        // SECURITY: Securely erase temp file
+                        await Services.SecureEraseHelper.SecureEraseFileAsync(file, Services.EraseMethod.Quick);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"SECURITY WARNING: Failed to securely erase temp file {file}: {ex.Message}");
+                        // Fallback to regular delete
+                        try { File.Delete(file); } catch { }
+                    }
+                }
+
+                System.Diagnostics.Debug.WriteLine($"SECURITY: Cleaned up {tempFiles.Length} temp video files");
+            }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Error during temp file cleanup: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"SECURITY WARNING: Error during temp file cleanup: {ex.Message}");
         }
     }
 }
