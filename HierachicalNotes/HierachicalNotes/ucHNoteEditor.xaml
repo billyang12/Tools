@@ -63,6 +63,7 @@
         </Grid>
         <TextBox Name="tbContent"
                  SpellCheck.IsEnabled="False"
+                 FontFamily="Consolas"
                  AcceptsReturn="True" Grid.Row="3" 
                  TextWrapping="Wrap" 
                  VerticalScrollBarVisibility="Visible" 
